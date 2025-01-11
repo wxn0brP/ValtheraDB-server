@@ -1,0 +1,11 @@
+{
+    "ext": "ts",
+    "ignore": [
+        "gui",
+        "dist"
+    ],
+    "exec": "yarn build",
+    "events": {
+        "restart": "clear"
+    }
+}

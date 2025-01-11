@@ -1,0 +1,46 @@
+{
+	"name": "@wxn0brp/db-server",
+	"version": "0.0.1",
+	"main": "dist/esm/index.js",
+	"description": "A simple file-based database server",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/wxn0brP/database-server.git"
+	},
+	"keywords": [
+		"database",
+		"file-based",
+		"CRUD",
+		"graph",
+		"query",
+		"server"
+	],
+	"author": "wxn0brP",
+	"license": "MIT",
+	"type": "module",
+	"dependencies": {
+		"@wxn0brp/db": "^0.0.6",
+		"body-parser": "^1.20.3",
+		"cors": "^2.8.5",
+		"dotenv": "^16.4.5",
+		"express": "^4.21.1",
+		"jwt-simple": "^0.5.6",
+		"node-cache": "^5.1.2"
+	},
+	"devDependencies": {
+		"@types/body-parser": "^1.19.5",
+		"@types/got": "^9.6.12",
+		"@types/node": "^22.10.2",
+		"typescript": "^5.7.2"
+	},
+	"scripts": {
+		"build:esm": "tsc",
+		"build:cjs": "tsc --module CommonJS --outDir ./dist/cjs --declarationDir ./dist/cjs",
+		"build": "npm run build:esm && npm run build:cjs",
+		"start": "node ./dist/esm/server/index.js",
+		"mgmt": "node ./dist/esm/serverMgmt/index.js"
+	},
+	"files": [
+		"dist"
+	]
+}

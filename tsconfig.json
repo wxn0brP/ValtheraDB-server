@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "module": "ES2022",
+        "moduleResolution": "node",
+        "target": "ES2022",
+        "outDir": "./dist/esm",
+        "esModuleInterop": true,
+        "allowArbitraryExtensions": true,
+        "skipLibCheck": true
+    },
+    "include": [
+        "server",
+        "serverMgmt"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
