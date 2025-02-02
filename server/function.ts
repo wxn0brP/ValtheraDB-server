@@ -21,30 +21,30 @@ const sandbox = {
 
 const context = createContext(sandbox);
 
-function changeStringToFunction(func){
-    try{
+export function changeStringToFunction(func: string) {
+    try {
         const userFunction = runInContext(`(${func})`, context);
         return userFunction;
-    }catch(e){
+    } catch (e) {
         throw new Error("Invalid function");
     }
 }
 
-function deserializeFunctions(data, keys){
-    const setAtPath = (obj, path, value) => {
+function deserializeFunctions(data: Record<string, any>, keys: string[]): Record<string, any> | any[] {
+    const setAtPath = (obj: Record<string, any>, path: string, value: any) => {
         const segments = path.split(".").map(segment => segment.replace(/\[dot\]/g, "."));
         let currentLevel = obj;
 
-        for(let i = 0; i < segments.length - 1; i++){
+        for (let i = 0; i < segments.length - 1; i++) {
             const segment = segments[i];
-            if(Array.isArray(currentLevel)){
+            if (Array.isArray(currentLevel)) {
                 const index = parseInt(segment, 10);
-                if(!currentLevel[index]) currentLevel[index] = {};
+                if (!currentLevel[index]) currentLevel[index] = {};
                 currentLevel = currentLevel[index];
-            }else if(!currentLevel[segment]){
+            } else if (!currentLevel[segment]) {
                 currentLevel[segment] = {};
                 currentLevel = currentLevel[segment];
-            }else{
+            } else {
                 currentLevel = currentLevel[segment];
             }
         }
@@ -52,10 +52,10 @@ function deserializeFunctions(data, keys){
         currentLevel[segments[segments.length - 1]] = value;
     };
 
-    const getAtPath = (obj, path) => {
+    const getAtPath = (obj: Record<string, any>, path: string) => {
         const segments = path.split(".").map(key => key.replace(/\[dot\]/g, "."));
         return segments.reduce((acc, key) => {
-            if(Array.isArray(acc)){
+            if (Array.isArray(acc)) {
                 const index = parseInt(key, 10);
                 return acc[index];
             }
@@ -66,19 +66,19 @@ function deserializeFunctions(data, keys){
     keys.forEach((keyPath) => {
         const value = getAtPath(data, keyPath);
 
-        if(typeof value === "string"){
+        if (typeof value === "string") {
             const fn = changeStringToFunction(value);
             setAtPath(data, keyPath, fn);
-        }else if(typeof value === "object" && value !== null){
-            if(Array.isArray(value)){
+        } else if (typeof value === "object" && value !== null) {
+            if (Array.isArray(value)) {
                 value.forEach((item, index) => {
-                    if(typeof item === "string"){
+                    if (typeof item === "string") {
                         value[index] = changeStringToFunction(item);
                     }
                 });
-            }else{
+            } else {
                 Object.keys(value).forEach((key) => {
-                    if(typeof value[key] === "string"){
+                    if (typeof value[key] === "string") {
                         value[key] = changeStringToFunction(value[key]);
                     }
                 });

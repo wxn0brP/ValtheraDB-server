@@ -4,7 +4,7 @@
         "gui",
         "dist"
     ],
-    "exec": "yarn build",
+    "exec": "yarn build && node .",
     "events": {
         "restart": "clear"
     }

@@ -1,9 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
-import { authMiddleware, loginFunction } from "./auth.js";
-import dbRouter from "./db.js";
-import graphRouter from "./graph.js";
-import "./initDataBases.js";
+import { authMiddleware, loginFunction } from "./auth";
+import dbRouter from "./db";
+import "./initDataBases";
 import cors from "cors";
 import { configDotenv } from "dotenv";
 
@@ -12,17 +11,13 @@ const port = process.env.PORT || 14785;
 global.baseDir = process.env.BASE_DIR || process.cwd();
 
 console.log("baseDir", global.baseDir);
-global.app = express();
-global.app.get("/", (req, res) => res.send("Server is running."));
-global.app.use(bodyParser.urlencoded({ extended: true }));
-global.app.use(bodyParser.json());
-global.app.use(cors({
+const app = express();
+app.get("/", (req, res) => res.send("Server is running."));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cors({
     origin: "*",
 }));
-
-const apiDbRouter = express.Router();
-apiDbRouter.use(authMiddleware);
-apiDbRouter.use(checkRequest);
 
 function checkRequest(req, res, next){
     const dbName = req.body.db;
@@ -37,11 +32,13 @@ function checkRequest(req, res, next){
     next();
 }
 
-apiDbRouter.use("/database", dbRouter);
-apiDbRouter.use("/graph", graphRouter);
+const apiDbRouter = express.Router();
+apiDbRouter.use(authMiddleware);
+apiDbRouter.use(checkRequest);
+apiDbRouter.use(dbRouter);
 
-global.app.use("/db/", apiDbRouter);
-global.app.post("/login", async (req, res) => {
+app.use("/db/", apiDbRouter);
+app.post("/login", async (req, res) => {
     const { login, password } = req.body;
     if(!login || !password) return res.json({ err: true, msg: "Login and password are required" });
     
@@ -50,14 +47,14 @@ global.app.post("/login", async (req, res) => {
     res.json({ err: false, token });
 });
 
-global.app.post("/getDbList", authMiddleware, async (req, res) => {
+app.post("/getDbList", authMiddleware, async (req, res) => {
     const dbsKeys = Object.keys(global.dataCenter);
     const dbs = dbsKeys.map(dbName => ({ name: dbName, type: global.dataCenter[dbName].type }));
     res.json({ err: false, result: dbs });
 });
 
 if(process.env.gui){
-    global.app.use("/gui", express.static("gui"));
+    app.use("/gui", express.static("gui"));
 }
 
-global.app.listen(port, () => console.log(`Server started on port ${port}`));
+app.listen(port, () => console.log(`Server started on port ${port}`));
