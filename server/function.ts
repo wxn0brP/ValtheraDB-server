@@ -19,12 +19,14 @@ const sandbox = {
     Buffer: undefined,
 };
 
-const context = createContext(sandbox);
-
 export function changeStringToFunction(func: string) {
     try {
-        const userFunction = runInContext(`(${func})`, context);
-        return userFunction;
+        return function (data: any, ctx: any) {
+            const context = createContext({ ...ctx, ...sandbox });
+            const userFunction = runInContext(`(${func})`, context);
+            if (typeof userFunction !== "function") throw new Error("Invalid function");
+            return userFunction(data, ctx);
+        }
     } catch (e) {
         throw new Error("Invalid function");
     }
