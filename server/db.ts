@@ -25,7 +25,7 @@ router.post('/:type', async (req, res) => {
         if (!params || params.length === 0) return res.status(400).json({ err: true, msg: "params is required" });
 
         const keys = req.body.keys as string[];
-        const parsedParams = deserializeFunctions(params, keys);
+        const parsedParams = deserializeFunctions(params, keys || []);
 
         const collection = params.shift() as string;
         if (!collection) {
