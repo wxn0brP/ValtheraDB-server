@@ -7,6 +7,7 @@ if(args.length == 0){
 
 import { DataBase } from "@wxn0brp/db";
 import { addUserAccess, removeUser } from "../server/auth.js";
+import { parsersList } from "../server/customParser.js";
 global.db = new DataBase("./serverDB");
 
 switch(args.shift()){
@@ -15,15 +16,23 @@ switch(args.shift()){
     break;
     case "add-db":
         if(args.length < 3){
-            console.log("usage: add-db <type> <name> <folder> <opts>");
+            console.log("usage: add-db <type> <name> <folder> <opts> <customParser>");
             console.log("*type: 'database' or 'graph'");
             console.log("*opts: JSON object");
+            console.log("*customParser: name of the custom parser (from parsers folder)");
             process.exit(1);
         }
         const type = args[0];
         const name = args[1];
         const folder = args[2];
         const opts = args[3] ? JSON.parse(args[3]) : {};
+        const customParser = args[4] ? args[4] : undefined;
+        if(customParser) {
+            if(!parsersList.includes(customParser)){
+                console.log("Custom parser not found");
+                process.exit(1);
+            }
+        }
         
         global.db.findOne("dbs", { name }).then(dbExists => {
             if(dbExists){
@@ -35,7 +44,8 @@ switch(args.shift()){
                 type,
                 name,
                 folder,
-                opts
+                opts,
+                parser: customParser
             }, false).then(() => console.log("Done"));
         });
     break;
@@ -82,7 +92,7 @@ switch(args.shift()){
 
 function help(){
     console.log("commands:");
-    console.log("  add-db <type> <name> <folder> <opts>");
+    console.log("  add-db <type> <name> <folder> <opts> <customParser>");
     console.log("  rm-db <name>");
     console.log("  list-dbs");
     console.log("  add-user <login> <password>");

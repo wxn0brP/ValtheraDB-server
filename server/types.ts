@@ -10,6 +10,7 @@ export interface DataBaseBuilder {
     name: string;
     folder: string;
     opts: any;
+    parser: string;
 }
 
 export {}
