@@ -1,6 +1,7 @@
 {
     "watch": ["server","serverMgmt"],
-    "cmd": "yarn build && yarn start",
+    "cmd": "yarn build && clear && yarn start",
+    "restart_cmd": "clear",
     "events": {
         "rs": "clear"
     }

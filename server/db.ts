@@ -1,6 +1,7 @@
 import { Router } from "express";
 import deserializeFunctions from "./function";
 import { isPathSafe } from "./pathUtils";
+import { checkPermission } from "./perm";
 const router = Router();
 
 router.post('/:type', async (req, res) => {
@@ -19,6 +20,10 @@ router.post('/:type', async (req, res) => {
 
         if(!db[type] || typeof db[type] !== "function"){
             return res.status(400).json({ err: true, msg: "invalid type" });
+        }
+
+        if(!await checkPermission(req.user._id, type, req.body.db)){
+            return res.status(403).json({ err: true, msg: "access denied" });
         }
 
         const params = req.body.params as (Object | string)[];

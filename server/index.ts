@@ -53,6 +53,10 @@ app.post("/getDbList", authMiddleware, async (req, res) => {
     res.json({ err: false, result: dbs });
 });
 
+app.post("/auth-check", authMiddleware, (req, res) => {
+    res.json({ err: false });
+});
+
 if(process.env.gui){
     app.use("/gui", express.static("gui"));
 }
