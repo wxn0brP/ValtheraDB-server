@@ -1,7 +1,7 @@
-# @wxn0brp/db-server
+# ValtheraDB server
 
 A simple file-based database server that leverages the @wxn0brp/db library.
-For more details, visit [this link](https://github.com/wxn0brP/database).
+For more details, visit [this link](https://github.com/wxn0brP/ValtheraDB).
 
 ## Features
 
@@ -14,8 +14,8 @@ For more details, visit [this link](https://github.com/wxn0brP/database).
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/wxn0brP/database-server.git
-   cd database-server
+   git clone https://github.com/wxn0brP/ValtheraDB-server.git
+   cd ValtheraDB-server
    ```
 
 2. Install dependencies:
@@ -60,7 +60,7 @@ yarn start
 
 ## Contributing
 
-Contributions are welcome! Feel free to open issues or submit pull requests on the [GitHub repository](https://github.com/wxn0brP/database-server).
+Contributions are welcome! Feel free to open issues or submit pull requests on the [GitHub repository](https://github.com/wxn0brP/ValtheraDB-server).
 
 ## License
 

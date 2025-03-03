@@ -1,5 +1,5 @@
 {
-	"name": "@wxn0brp/db-server",
+	"name": "@wxn0brp/valthera-db-server",
 	"version": "0.0.1",
 	"main": "dist/server/index.js",
 	"description": "A simple file-based database server",
@@ -40,6 +40,7 @@
 	"scripts": {
 		"build": "tsc && tsc-alias",
 		"start": "node ./dist/server/index.js",
+		"server": "node ./dist/server/index.js",
 		"mgmt": "node ./dist/serverMgmt/index.js"
 	},
 	"files": [
