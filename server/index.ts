@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import { authMiddleware, loginFunction } from "./auth";
 import dbRouter from "./db";
+import dbQueryRouter from "./dbQuery";
 import "./initDataBases";
 import cors from "cors";
 import { configDotenv } from "dotenv";
@@ -36,8 +37,13 @@ const apiDbRouter = express.Router();
 apiDbRouter.use(authMiddleware);
 apiDbRouter.use(checkRequest);
 apiDbRouter.use(dbRouter);
-
 app.use("/db/", apiDbRouter);
+
+const queryApiRouter = express.Router();
+queryApiRouter.use(authMiddleware);
+queryApiRouter.use(dbQueryRouter);
+app.use("/q/", queryApiRouter);
+
 app.post("/login", async (req, res) => {
     const { login, password } = req.body;
     if(!login || !password) return res.json({ err: true, msg: "Login and password are required" });
