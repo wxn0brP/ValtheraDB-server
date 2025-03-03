@@ -1,8 +1,9 @@
 import { Command } from 'commander';
 import { DataBase } from "@wxn0brp/db";
-import { addUserAccess, removeUser } from "../server/auth.js";
 import { parsersList } from "../server/customParser.js";
 import fs from "fs";
+import { addUserAccess, removeUser } from './mgmt.js';
+import { generateToken } from '../server/authHelpers.js';
 
 const program = new Command();
 global.db = new DataBase("./serverDB");
@@ -141,6 +142,24 @@ program
         const user_id = user._id;
         await global.db.removeOne("perm", { u: user_id, to: db_name });
         console.log("Done");
+    });
+
+program
+    .command("get-token <user_id_or_login> [match_chars]")
+    .description("Get a token for a user")
+    .action(async (user_id_or_login, match_chars) => {
+        const user = await global.db.findOne("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
+        if (!user) {
+            console.log("User not found");
+            process.exit(1);
+        }
+
+        const token = await generateToken({ _id: user._id });
+        if (match_chars) {
+            console.log(match_chars + token + match_chars);
+        } else {
+            console.log(token);
+        }
     });
 
 program.parse(process.argv);
