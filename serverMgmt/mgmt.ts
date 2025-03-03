@@ -1,4 +1,4 @@
-import { generateHash } from "../server/authHelpers";
+import { generateHash } from "../server/auth/helpers";
 
 export async function addUserAccess(login: string, password: string) {
     if (!/^[a-zA-Z0-9]+$/.test(login)) return { err: true, msg: "Login can only contain letters and numbers." };

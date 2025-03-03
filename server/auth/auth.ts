@@ -1,7 +1,7 @@
 import jwt from "jwt-simple";
 import NodeCache from "node-cache";
-import { jwtSecret } from "./vars";
-import { checkUserAccess, generateToken } from "./authHelpers";
+import { jwtSecret } from "../vars";
+import { checkUserAccess, generateToken } from "./helpers";
 
 const TOKEN_CACHE_TTL = parseInt(process.env.TOKEN_CACHE_TTL) || 900; // 15 minutes
 const cache = new NodeCache({ stdTTL: TOKEN_CACHE_TTL, checkperiod: TOKEN_CACHE_TTL });

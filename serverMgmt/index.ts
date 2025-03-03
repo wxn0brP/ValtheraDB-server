@@ -1,9 +1,9 @@
-import { Command } from 'commander';
 import { DataBase } from "@wxn0brp/db";
-import { parsersList } from "../server/customParser.js";
+import { Command } from 'commander';
 import fs from "fs";
+import { generateToken } from '../server/auth/helpers.js';
+import { parsersList } from "../server/init/customParser.js";
 import { addUserAccess, removeUser } from './mgmt.js';
-import { generateToken } from '../server/authHelpers.js';
 
 const program = new Command();
 global.db = new DataBase("./serverDB");

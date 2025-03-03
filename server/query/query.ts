@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { isPathSafe } from "./pathUtils";
-import { checkPermission } from "./perm";
+import { isPathSafe } from "../utils/path";
+import { checkPermission } from "../utils/perm";
 import {  DataBase } from "@wxn0brp/db";
 import * as valtheraParsers from "@wxn0brp/valthera-db-string-query";
 const router = Router();

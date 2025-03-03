@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import os from "os";
 
-function generateJwtSecret(){
+function generateJwtSecret() {
     const hostname = os.hostname();
     const cpuModels = os.cpus().map(cpu => cpu.model).join("-");
     const platform = os.platform();
@@ -18,6 +18,6 @@ function generateJwtSecret(){
     return crypto.createHash("sha256").update(secretData).digest("hex");
 }
 
-export default function getSecret(){
+export default function getSecret() {
     return process.env.JWT || generateJwtSecret();
 }

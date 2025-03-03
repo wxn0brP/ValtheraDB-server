@@ -1,6 +1,6 @@
 import jwt from "jwt-simple";
 import crypto from "crypto";
-import { jwtSecret } from "./vars";
+import { jwtSecret } from "../vars";
 
 export async function generateToken(payload: any) {
     const token = jwt.encode(payload, jwtSecret);

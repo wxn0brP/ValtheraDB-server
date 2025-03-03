@@ -1,7 +1,7 @@
 import { Router } from "express";
 import deserializeFunctions from "./function";
-import { isPathSafe } from "./pathUtils";
-import { checkPermission } from "./perm";
+import { isPathSafe } from "../utils/path";
+import { checkPermission } from "../utils/perm";
 const router = Router();
 
 router.post('/:type', async (req, res) => {

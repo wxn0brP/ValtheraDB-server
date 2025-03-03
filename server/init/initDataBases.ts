@@ -1,5 +1,5 @@
 import { DataBase, Graph } from "@wxn0brp/db";
-import { DataBaseBuilder } from "./types";
+import { DataBaseBuilder } from "../types";
 import parsers, { loadParsers } from "./customParser";
 global.db = new DataBase("./serverDB");
 global.dataCenter = {};
