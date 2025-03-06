@@ -1,9 +1,14 @@
 import { Router } from "express";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
-import {  DataBase } from "@wxn0brp/db";
-import * as valtheraParsers from "@wxn0brp/valthera-db-string-query";
+import { DataBase } from "@wxn0brp/db";
+import { ValtheraDbParsers } from "@wxn0brp/valthera-db-string-query";
 const router = Router();
+
+const ValtheraParsers = {};
+for (const [name, parser] of Object.entries(ValtheraDbParsers)) {
+    ValtheraParsers[name] = new parser();
+}
 
 function getDb(name: string) {
     const dbData = global.dataCenter[name];
@@ -20,11 +25,11 @@ function findMatchingString(query: string, options: string[]): string | null {
 }
 
 function getParser(parserType: string) {
-    const parser = valtheraParsers[parserType];
+    const parser = ValtheraParsers[parserType];
     if(parser) return parser;
 
-    const parserName = findMatchingString(parserType, Object.keys(valtheraParsers));
-    if(parserName) return valtheraParsers[parserName];
+    const parserName = findMatchingString(parserType, Object.keys(ValtheraParsers));
+    if(parserName) return ValtheraParsers[parserName];
 
     return null;
 }
