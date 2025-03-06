@@ -34,7 +34,6 @@
 		"@types/cors": "^2.8.17",
 		"@types/got": "^9.6.12",
 		"@types/node": "^22.13.5",
-		"node-fetch": "^3.3.2",
 		"tsc-alias": "^1.8.11",
 		"typescript": "^5.7.2"
 	},
