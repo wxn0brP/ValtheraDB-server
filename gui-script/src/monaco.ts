@@ -53,7 +53,7 @@ export function setDatabases(dbs: string[], graphs: string[]) {
 export function changeEditor(type: "ts" | "sql" | "config") {
     if (type === "ts") {
         changeLanguage("typescript");
-        editor.setValue(`db.test.find("users", {})`);
+        editor.setValue(``);
         sqlDbSelect.style.display = "none";
     } else if (type === "sql") {
         changeLanguage("sql");

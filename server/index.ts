@@ -3,7 +3,7 @@ import cors from "cors";
 import { configDotenv } from "dotenv";
 import express from "express";
 import { apiDbRouter, queryApiRouter } from "./express/db";
-import "./initDataBases";
+import "./init/initDataBases";
 import onceRouter from "./express/once";
 
 configDotenv();
