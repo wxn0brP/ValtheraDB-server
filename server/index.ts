@@ -22,4 +22,10 @@ app.use("/db/", apiDbRouter);
 app.use("/q/", queryApiRouter);
 app.use("/", onceRouter);
 
+
+if (process.env.gui) {
+    const gui = await import("./express/gui");
+    app.use("/gui", gui.default);
+}
+
 app.listen(port, () => console.log(`Server started on port ${port}`));

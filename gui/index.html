@@ -5,45 +5,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>wxn0brP database gui</title>
         <link rel="stylesheet" href="css/style.css">
-        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="js/index.css">
         <link rel="shortcut icon" href="favicon.svg" type="image/x-icon">
     </head>
     <body>
         <noscript>This page require JS to work</noscript>
         <div id="app">
-            <span id="nav__toggle">&#9776;</span>
-            <div id="popUpContainer"></div>
-            <nav style="left: 0px">
-                Selected:
-                    <br /> 
-                    <span id="selected-server"></span>
-                    <br /> 
-                    <span id="selected-database"></span>
-                    <br /> 
-                    <span id="selected-table"></span>
-                    <br />
-                <br /> 
-                <button onclick="popupFunc.showMgmtServers()">Mengage Server</button>
-                <ul id="database-server-list"></ul>
-            </nav>
+           <div id="editor"></div>
+           <main>
+                <button id="run">Run</button>
+                Display type: 
+                <select id="display-type">
+                    <option value="table">Table</option>
+                    <option value="card">Card</option>
+                    <option value="raw">Raw</option>
+                </select>
+                <h2>Output</h2>
+                <div id="result"></div>
+           </main>
+           <nav>
+                <select id="editor-type">
+                    <option value="ts">Valthera DB</option>
+                    <option value="sql">SQL (simplified)</option>
+                    <option value="config">Edit config</option>
+                </select>
+                <select id="sql-db-select" style="display: none"></select>
+           </nav>
         </div>
-        <div id="templates" style="display: none;"></div>
 
-        <script src="libs/core.js"></script>
-        <script src="libs/handlebars.min.js"></script>
-        <script src="libs/json5.min.js"></script>
-        <script src="libs/d3.v7.min.js"></script>
-
-        <script src="js/loadHTML.js"></script>
-        <script src="js/vars.js"></script>
-        <script src="js/utils.js"></script>
-        <script src="js/templates.js"></script>
-        <script src="js/api.js"></script>
-        <script src="js/popUp.js"></script>
-        <script src="js/render.js"></script>
-        <script src="js/queryApi.js"></script>
-        <script src="js/queryDb.js"></script>
-        <script src="js/queryGraph.js"></script>
-        <script src="js/index.js"></script>
+        <script src="js/index.js" type="module"></script>
     </body>
 </html>

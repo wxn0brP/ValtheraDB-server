@@ -1,0 +1,23 @@
+{
+    "name": "script",
+    "version": "0.0.1",
+    "main": "dist/index.js",
+    "author": "wxn0brP",
+    "license": "MIT",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "tsc && tsc-alias && node build.js",
+        "start": "node dist/index.js"
+    },
+    "devDependencies": {
+        "@types/node": "^22.12.0",
+        "tsc-alias": "^1.8.10",
+        "typescript": "^5.7.3"
+    },
+    "dependencies": {
+        "ValtheraDB": "github:wxn0brP/ValtheraDB#cdn-dist",
+        "esbuild": "^0.25.0",
+        "monaco-editor": "^0.52.2"
+    }
+}

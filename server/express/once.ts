@@ -22,8 +22,4 @@ onceRouter.post("/auth-check", authMiddleware, (req, res) => {
     res.json({ err: false });
 });
 
-if(process.env.gui){
-    onceRouter.use("/gui", express.static("gui"));
-}
-
 export default onceRouter;

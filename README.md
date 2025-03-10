@@ -13,22 +13,22 @@ For more details, visit [this link](https://github.com/wxn0brP/ValtheraDB).
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/wxn0brP/ValtheraDB-server.git
-   cd ValtheraDB-server
-   ```
+```bash
+git clone https://github.com/wxn0brP/ValtheraDB-server.git
+cd ValtheraDB-server
+```
 
 2. Install dependencies:
 
-   ```bash
-   yarn
-   ```
+```bash
+yarn
+```
 
 3. Build the project:
 
-   ```bash
-   yarn build
-   ```
+```bash
+yarn build
+```
 
 ## First Configuration
 
@@ -56,6 +56,20 @@ Start the database server with the following command:
 
 ```bash
 yarn start
+```
+
+### GUI
+
+First, Compile the GUI:
+```bash
+cd gui-script
+yarn
+yarn build
+```
+
+Now, enable the GUI on .env:
+```bash
+gui=true
 ```
 
 ## Contributing
