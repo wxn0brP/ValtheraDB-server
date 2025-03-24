@@ -3,9 +3,10 @@ import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
 import { DataBase } from "@wxn0brp/db";
 import { ValtheraDbParsers } from "@wxn0brp/valthera-db-string-query";
+import { ValtheraParser, ValtheraQuery } from "@wxn0brp/valthera-db-string-query/dist/types";
 const router = Router();
 
-const ValtheraParsers = {};
+const ValtheraParsers: Record<string, ValtheraParser> = {};
 for (const [name, parser] of Object.entries(ValtheraDbParsers)) {
     ValtheraParsers[name] = new parser();
 }
@@ -55,7 +56,7 @@ router.post("/:parserType", async (req, res) => {
     }
 
     try {
-        let query;
+        let query: ValtheraQuery;
         try {
             query = parser.parse(q);
         } catch {
