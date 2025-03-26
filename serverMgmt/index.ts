@@ -98,6 +98,10 @@ program
     .command('add-user-access <user_id_or_login> <db_name> <access>')
     .description('Add user access to a database')
     .addHelpText('after', `
+DB name:
+    - A string representing the name of the database
+    - "$" for all databases
+
 Access options:
     - A number representing the access level (0-31, e.g., 7)
     - A combination of flags: 'a' (add), 'r' (remove), 'u' (update), 'c' (collection), 'n' (unknown)
