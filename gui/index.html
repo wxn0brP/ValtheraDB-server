@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>wxn0brP database gui</title>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="js/index.css">
+        <link rel="shortcut icon" href="favicon.svg" type="image/x-icon">
+    </head>
+    <body>
+        <noscript>This page require JS to work</noscript>
+        <div id="app">
+           <div id="editor"></div>
+           <main>
+                <button id="run">Run</button>
+                Display type: 
+                <select id="display-type">
+                    <option value="table">Table</option>
+                    <option value="card">Card</option>
+                    <option value="raw">Raw</option>
+                </select>
+                <h2>Output</h2>
+                <div id="result"></div>
+           </main>
+           <nav>
+                <select id="editor-type">
+                    <option value="ts">Valthera DB</option>
+                    <option value="sql">SQL (simplified)</option>
+                    <option value="config">Edit config</option>
+                </select>
+                <select id="sql-db-select" style="display: none"></select>
+           </nav>
+        </div>
+
+        <script src="js/index.js" type="module"></script>
+    </body>
+</html>
