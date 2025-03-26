@@ -4,9 +4,11 @@ import fs from "fs";
 import { generateToken } from '../server/auth/helpers.js';
 import { parsersList } from "../server/init/customParser.js";
 import { addUserAccess, removeUser } from './mgmt.js';
+import { configDotenv } from "dotenv";
+configDotenv();
 
 const program = new Command();
-global.db = new DataBase("./serverDB");
+global.db = new DataBase(process.env.INTERNAL_VDB || "./serverDB");
 const version = JSON.parse(fs.readFileSync("./package.json", "utf-8")).version;
 
 program

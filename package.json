@@ -19,7 +19,7 @@
 	"license": "MIT",
 	"type": "module",
 	"dependencies": {
-		"@wxn0brp/db": "^0.4.1",
+		"@wxn0brp/db": "^0.4.2",
 		"@wxn0brp/valthera-db-string-query": "github:wxn0brP/ValtheraDB-string-query#dist",
 		"body-parser": "^1.20.3",
 		"commander": "^13.1.0",

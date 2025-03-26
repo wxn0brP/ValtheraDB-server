@@ -3,10 +3,10 @@ import cors from "cors";
 import { configDotenv } from "dotenv";
 import express from "express";
 import { apiDbRouter, queryApiRouter } from "./express/db";
-import "./init/initDataBases";
 import onceRouter from "./express/once";
 
 configDotenv();
+await import("./init/initDataBases");
 const port = process.env.PORT || 14785;
 global.baseDir = process.env.BASE_DIR || process.cwd();
 
@@ -21,7 +21,6 @@ app.use(cors({
 app.use("/db/", apiDbRouter);
 app.use("/q/", queryApiRouter);
 app.use("/", onceRouter);
-
 
 if (process.env.gui) {
     const gui = await import("./express/gui");
