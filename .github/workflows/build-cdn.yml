@@ -1,0 +1,19 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: wxn0brP/workflow-dist/.github/workflows/build-ts.yml@main
+    with:
+      files: "dist gui package.json gui-script/dist .env.example dockerfile app.js"
+      customCommands: |
+        cd gui-script
+        npm i
+        npm run build
+        cd ..
