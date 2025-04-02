@@ -7,3 +7,4 @@ serverDB
 data
 .vscode
 parsers
+.suglite_history
