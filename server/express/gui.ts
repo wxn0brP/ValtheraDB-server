@@ -4,6 +4,9 @@ import fs from "fs";
 
 const dbPath = "node_modules/@wxn0brp/db/dist/";
 
+router.get("/login", (req, res) => {
+    res.sendFile("login.html", { root: "gui" });
+});
 router.use("/", express.static("gui"));
 router.use("/js", express.static("gui-script/dist"));
 router.use("/ts", express.static(dbPath));
