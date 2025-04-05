@@ -1,0 +1,76 @@
+import { monaco, setDatabases } from "./monaco.js";
+import DataBaseRemoteClass from "../node_modules/ValtheraDB/cdn-dist/database.js";
+import GraphRemoteClass from "../node_modules/ValtheraDB/cdn-dist/graph.js";
+export let baseConfig = {
+    url: "",
+    auth: ""
+};
+export let config = {};
+let databases = {};
+async function loadCollections(name) {
+    const collections = await databases[name].getCollections();
+    const type = `
+        declare type VC_${name} = ${collections.map(v => `"${v}"`).join(" | ")}
+    `;
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(type, `ts:valthera-db-types-collections-${name}.d.ts`);
+}
+export function initDatabases() {
+    databases = {};
+    const dbs = [];
+    const graphs = [];
+    const configKeys = Object.keys(config);
+    for (const key of configKeys) {
+        let instance;
+        const cfg = getDbConfig(key);
+        switch (cfg.type) {
+            case "database":
+                instance = new DataBaseRemoteClass(cfg);
+                dbs.push(key);
+                break;
+            case "graph":
+                instance = new GraphRemoteClass(cfg);
+                graphs.push(key);
+                break;
+            default:
+                console.log("Unknown database type");
+                continue;
+        }
+        databases[key] = instance;
+        loadCollections(key);
+    }
+    setDatabases(dbs, graphs);
+}
+export function getConfig() {
+    return { config, baseConfig };
+}
+export function getDatabases() {
+    return databases;
+}
+export function getDbConfig(name) {
+    const opts = config[name];
+    const cfg = {
+        type: opts.type || "database",
+        ...baseConfig,
+        name: opts.name || name
+    };
+    if (opts.url)
+        cfg.url = opts.url;
+    if (opts.auth)
+        cfg.auth = opts.auth;
+    if (!cfg.url || cfg.url.trim() === "")
+        cfg.url = window.location.origin;
+    return cfg;
+}
+export function setConfig(cfg, baseCfg) {
+    config = cfg;
+    baseConfig = baseCfg;
+    localStorage.setItem("cfg", JSON.stringify({ cfg, baseCfg }));
+    initDatabases();
+}
+setTimeout(() => {
+    if (localStorage.getItem("cfg")) {
+        const { cfg, baseCfg } = JSON.parse(localStorage.getItem("cfg"));
+        setConfig(cfg, baseCfg);
+    }
+}, 100);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZGIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvZGIudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUFFLE1BQU0sRUFBRSxZQUFZLEVBQUUsTUFBTSxVQUFVLENBQUM7QUFDaEQsT0FBTyxtQkFBbUIsTUFBTSxpREFBaUQsQ0FBQztBQUNsRixPQUFPLGdCQUFnQixNQUFNLDhDQUE4QyxDQUFDO0FBVTVFLE1BQU0sQ0FBQyxJQUFJLFVBQVUsR0FBRztJQUNwQixHQUFHLEVBQUUsRUFBRTtJQUNQLElBQUksRUFBRSxFQUFFO0NBQ1gsQ0FBQTtBQUVELE1BQU0sQ0FBQyxJQUFJLE1BQU0sR0FBdUMsRUFBRSxDQUFBO0FBQzFELElBQUksU0FBUyxHQUFpRCxFQUFFLENBQUM7QUFFakUsS0FBSyxVQUFVLGVBQWUsQ0FBQyxJQUFZO0lBQ3ZDLE1BQU0sV0FBVyxHQUFHLE1BQU0sU0FBUyxDQUFDLElBQUksQ0FBQyxDQUFDLGNBQWMsRUFBYyxDQUFDO0lBQ3ZFLE1BQU0sSUFBSSxHQUFHOzBCQUNTLElBQUksTUFBTSxXQUFXLENBQUMsR0FBRyxDQUFDLENBQUMsQ0FBQyxFQUFFLENBQUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxDQUFDLElBQUksQ0FBQyxLQUFLLENBQUM7S0FDekUsQ0FBQTtJQUNELE1BQU0sQ0FBQyxTQUFTLENBQUMsVUFBVSxDQUFDLGtCQUFrQixDQUFDLFdBQVcsQ0FBQyxJQUFJLEVBQUUsb0NBQW9DLElBQUksT0FBTyxDQUFDLENBQUM7QUFDdEgsQ0FBQztBQUVELE1BQU0sVUFBVSxhQUFhO0lBQ3pCLFNBQVMsR0FBRyxFQUFFLENBQUM7SUFDZixNQUFNLEdBQUcsR0FBYSxFQUFFLENBQUM7SUFDekIsTUFBTSxNQUFNLEdBQWEsRUFBRSxDQUFDO0lBQzVCLE1BQU0sVUFBVSxHQUFHLE1BQU0sQ0FBQyxJQUFJLENBQUMsTUFBTSxDQUFDLENBQUM7SUFDdkMsS0FBSyxNQUFNLEdBQUcsSUFBSSxVQUFVLEVB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
