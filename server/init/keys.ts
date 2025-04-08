@@ -1,4 +1,4 @@
-import { JwtManager, KeyIndex } from "@wxn0brp/ts-shared-jwt";
+import { JwtManager, KeyIndex } from "@wxn0brp/wts-jwt";
 import getSecret from "../vars/secret";
 
 let jwtManager = new JwtManager(KeyIndex, getSecret());
