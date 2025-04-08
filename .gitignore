@@ -1,10 +1,13 @@
 node_modules
 yarn.lock
 package-lock.json
+
 dist
-.env
-serverDB
 data
-.vscode
+serverDB
 parsers
+
+*.env
+.vscode
 .suglite_history
+.http

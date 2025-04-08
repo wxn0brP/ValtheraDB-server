@@ -1,11 +1,19 @@
-import jwt from "jwt-simple";
 import crypto from "crypto";
-import { jwtSecret } from "../vars";
+import jwtManager from "../init/keys";
+import { genId } from "@wxn0brp/db";
+
+function sha(str: string) {
+    return crypto.createHash("sha256").update(str).digest("hex");
+}
 
 export async function generateToken(payload: any) {
-    const token = jwt.encode(payload, jwtSecret);
-    const exists = await global.db.findOne("token", { token });
-    if (!exists) await global.db.add("token", { token });
+    if (!payload) throw new Error("Payload is required");
+    if (!payload._id) payload._id = genId();
+
+    const token = await jwtManager.create(payload);
+    const exists = await global.db.findOne("token", { _id: payload._id });
+    if (!exists) await global.db.add("token", { _id: payload._id, sha: sha(token) });
+
     return token;
 }
 

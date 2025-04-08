@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
-import { DataBase } from "@wxn0brp/db";
+import { Valthera } from "@wxn0brp/db";
 import { ValtheraDbParsers } from "@wxn0brp/valthera-db-string-query";
 import { ValtheraParser, ValtheraQuery } from "@wxn0brp/valthera-db-string-query/dist/types";
 const router = Router();
@@ -14,7 +14,7 @@ for (const [name, parser] of Object.entries(ValtheraDbParsers)) {
 function getDb(name: string) {
     const dbData = global.dataCenter[name];
     if (!dbData) return null;
-    return dbData.db as DataBase;
+    return dbData.db as Valthera;
 }
 
 function findMatchingString(query: string, options: string[]): string | null {

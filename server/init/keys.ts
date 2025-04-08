@@ -1,0 +1,9 @@
+import { JwtManager, KeyIndex } from "@wxn0brp/ts-shared-jwt";
+import getSecret from "../vars/secret";
+
+let jwtManager = new JwtManager(KeyIndex, getSecret());
+export async function initKeys() {
+    await jwtManager.init(global.db);
+}
+
+export default jwtManager;

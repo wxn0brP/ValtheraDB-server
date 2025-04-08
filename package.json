@@ -19,14 +19,14 @@
 	"license": "MIT",
 	"type": "module",
 	"dependencies": {
-		"@wxn0brp/db": "^0.4.2",
+		"@wxn0brp/db": "^0.5.1",
+		"@wxn0brp/ts-shared-jwt": "github:wxn0brP/ts-shared#dist-jwt",
 		"@wxn0brp/valthera-db-string-query": "github:wxn0brP/ValtheraDB-string-query#dist",
 		"body-parser": "^1.20.3",
 		"commander": "^13.1.0",
 		"cors": "^2.8.5",
 		"dotenv": "^16.4.5",
 		"express": "^4.21.2",
-		"jwt-simple": "^0.5.6",
 		"node-cache": "^5.1.2"
 	},
 	"devDependencies": {

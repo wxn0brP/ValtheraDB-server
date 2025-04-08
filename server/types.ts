@@ -1,8 +1,8 @@
-import { DataBase } from "@wxn0brp/db";
+import { Valthera } from "@wxn0brp/db";
 
 declare global {
     var baseDir: string;
-    var db: DataBase;
+    var db: Valthera;
 }
 
 export interface DataBaseBuilder {

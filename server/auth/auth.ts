@@ -1,7 +1,7 @@
-import jwt from "jwt-simple";
 import NodeCache from "node-cache";
-import { jwtSecret } from "../vars";
 import { checkUserAccess, generateToken } from "./helpers";
+import jwtManager from "../init/keys";
+import Id from "@wxn0brp/db/dist/types/Id";
 
 const TOKEN_CACHE_TTL = parseInt(process.env.TOKEN_CACHE_TTL) || 900; // 15 minutes
 const cache = new NodeCache({ stdTTL: TOKEN_CACHE_TTL, checkperiod: TOKEN_CACHE_TTL });
@@ -13,28 +13,30 @@ export async function authMiddleware(req, res, next) {
     }
 
     if (cache.has(token)) {
-        req.user = cache.get(token);
+        const u = cache.get<Id>(token);
+        req.user = { _id: u };
         return next();
     }
 
     try {
-        const user = jwt.decode(token, jwtSecret);
-        if (!user || !user._id) {
+        const data = await jwtManager.decode(token) as { uid: Id; _id: Id };
+
+        if (!data || !data.uid || !data._id) {
             return res.status(401).json({ err: true, msg: "Invalid token." });
         }
 
-        const tokenD = await global.db.findOne("token", { token });
+        const tokenD = await global.db.findOne("token", { _id: data._id });
         if (!tokenD) {
             return res.status(401).json({ err: true, msg: "Invalid token." });
         }
 
-        const userD = await global.db.findOne("user", { _id: user._id });
+        const userD = await global.db.findOne("user", { _id: data.uid });
         if (!userD) {
             return res.status(401).json({ err: true, msg: "Invalid token." });
         }
 
-        req.user = user;
-        cache.set(token, user);
+        req.user = data;
+        cache.set(token, data.uid);
         next();
     } catch (err) {
         res.status(400).json({ err: true, msg: "An error occurred during authentication." });
@@ -47,7 +49,7 @@ export async function loginFunction(login: string, password: string) {
         return { err: true, msg: "Invalid login or password." };
     }
 
-    const token = await generateToken({ _id: user._id });
+    const token = await generateToken({ uid: user._id });
     cache.set(token, user);
     return { err: false, token };
 }
