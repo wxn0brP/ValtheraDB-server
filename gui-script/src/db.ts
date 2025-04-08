@@ -1,7 +1,7 @@
 import { monaco, setDatabases } from "./monaco";
 import DataBaseRemoteClass from "../node_modules/ValtheraDB/cdn-dist/database.js";
 import GraphRemoteClass from "../node_modules/ValtheraDB/cdn-dist/graph.js";
-import { DataBaseRemote, GraphRemote } from "@wxn0brp/db";
+import { ValtheraRemote, GraphRemote } from "@wxn0brp/db";
 
 interface AddDatabaseOpts {
     url?: string;
@@ -16,7 +16,7 @@ export let baseConfig = {
 }
 
 export let config: { [key: string]: AddDatabaseOpts } = {}
-let databases: Record<string, DataBaseRemote | GraphRemote> = {};
+let databases: Record<string, ValtheraRemote | GraphRemote> = {};
 
 async function loadCollections(name: string) {
     const collections = await databases[name].getCollections() as string[];
@@ -32,7 +32,7 @@ export function initDatabases() {
     const graphs: string[] = [];
     const configKeys = Object.keys(config);
     for (const key of configKeys) {
-        let instance: DataBaseRemote | GraphRemote;
+        let instance: ValtheraRemote | GraphRemote;
         const cfg = getDbConfig(key);
         switch (cfg.type) {
             case "database":
