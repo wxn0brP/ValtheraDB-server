@@ -2,14 +2,15 @@ import { Valthera, Graph } from "@wxn0brp/db";
 import { DataBaseBuilder } from "../types";
 import parsers, { loadParsers } from "./customParser";
 import { watch } from "fs";
+import { cache } from "../utils/perm";
 
 const internalVDB = process.env.INTERNAL_VDB || "./serverDB";
-global.db = new Valthera(internalVDB);
+global.internalDB = new Valthera(internalVDB);
 global.dataCenter = {};
 await loadParsers();
 
 async function loadDataBases() {
-    const databases = await global.db.find<DataBaseBuilder>("dbs", {});
+    const databases = await global.internalDB.find<DataBaseBuilder>("dbs", {});
     for (const db of databases) {
         switch (db.type) {
             case "database":
@@ -17,13 +18,15 @@ async function loadDataBases() {
 
                 global.dataCenter[db.name] = {
                     type: "database",
-                    db: new Valthera(db.folder, db.opts || {}, customParser)
+                    db: new Valthera(db.folder, db.opts || {}, customParser),
+                    dir: db.folder
                 }
                 break;
             case "graph":
                 global.dataCenter[db.name] = {
                     type: "graph",
-                    db: new Graph(db.folder)
+                    db: new Graph(db.folder),
+                    dir: db.folder
                 }
                 break;
             default:
@@ -44,10 +47,12 @@ async function reloadDataBases() {
     }, 100);
 }
 
-global.db.emiter.on("*", (req) => {
+global.internalDB.emiter.on("*", (req) => {
     if (req[0] !== "dbs") return;
     reloadDataBases();
+    cache.flushAll();
 });
 watch(internalVDB + "/dbs", () => {
     reloadDataBases();
+    cache.flushAll();
 });

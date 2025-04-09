@@ -25,17 +25,17 @@ export async function authMiddleware(req, res, next) {
             return res.status(401).json({ err: true, msg: "Invalid token." });
         }
 
-        const tokenD = await global.db.findOne("token", { _id: data._id });
+        const tokenD = await global.internalDB.findOne("token", { _id: data._id });
         if (!tokenD) {
             return res.status(401).json({ err: true, msg: "Invalid token." });
         }
 
-        const userD = await global.db.findOne("user", { _id: data.uid });
+        const userD = await global.internalDB.findOne("user", { _id: data.uid });
         if (!userD) {
             return res.status(401).json({ err: true, msg: "Invalid token." });
         }
 
-        req.user = data;
+        req.user = { _id: data.uid };
         cache.set(token, data.uid);
         next();
     } catch (err) {

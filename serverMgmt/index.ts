@@ -9,7 +9,7 @@ import { initKeys } from "../server/init/keys.js";
 configDotenv();
 
 const program = new Command();
-global.db = new Valthera(process.env.INTERNAL_VDB || "./serverDB");
+global.internalDB = new Valthera(process.env.INTERNAL_VDB || "./serverDB");
 const version = JSON.parse(fs.readFileSync("./package.json", "utf-8")).version;
 
 program
@@ -39,13 +39,13 @@ Parameters:
             process.exit(1);
         }
 
-        const dbExists = await global.db.findOne("dbs", { name });
+        const dbExists = await global.internalDB.findOne("dbs", { name });
         if (dbExists) {
             console.log("Database already exists");
             process.exit(1);
         }
 
-        await global.db.add("dbs", {
+        await global.internalDB.add("dbs", {
             type,
             name,
             folder,
@@ -62,7 +62,7 @@ program
     .alias("remove-db")
     .description("Remove a database")
     .action(async (name) => {
-        const res = await global.db.removeOne("dbs", { name });
+        const res = await global.internalDB.removeOne("dbs", { name });
         console.log(res ? "Done" : "Database not found");
         process.exit(0);
     });
@@ -71,7 +71,7 @@ program
     .command("list-dbs")
     .description("List all databases")
     .action(async () => {
-        const dbs = await global.db.find("dbs", {});
+        const dbs = await global.internalDB.find("dbs", {});
         console.log(dbs);
         process.exit(0);
     });
@@ -102,7 +102,7 @@ program
     .alias("lu")
     .description("List all users")
     .action(async () => {
-        const users = await global.db.find("user", {});
+        const users = await global.internalDB.find("user", {});
         const simplifiedUsers = users.map(u => ({
             login: u.login,
             _id: u._id
@@ -121,8 +121,8 @@ DB name:
     - "$" for all databases
 
 Access options:
-    - A number representing the access level (0-31, e.g., 7)
-    - A combination of flags: "a" (add), "r" (remove), "u" (update), "c" (collection), "n" (unknown)
+    - A number representing the access level (0-63, e.g., 7)
+    - A combination of flags: "f" (find), "a" (add), "r" (remove), "u" (update), "c" (collection), "n" (unknown)
 
 Example:
     - "arcu" grants add, remove, update, and collection access.
@@ -133,21 +133,22 @@ Example:
 
         if (isNaN(access)) {
             access = 0;
-            if (accessRaw.includes("a")) access += 1;  // "a" for add
-            if (accessRaw.includes("r")) access += 2;  // "r" for remove
-            if (accessRaw.includes("u")) access += 4;  // "u" for update
-            if (accessRaw.includes("c")) access += 8;  // "c" for collection
-            if (accessRaw.includes("n")) access += 16; // "n" for unknown
+            if (accessRaw.includes("f")) access += 1;  // "f" for find
+            if (accessRaw.includes("a")) access += 2;  // "a" for add
+            if (accessRaw.includes("r")) access += 4;  // "r" for remove
+            if (accessRaw.includes("u")) access += 8;  // "u" for update
+            if (accessRaw.includes("c")) access += 16; // "c" for collection
+            if (accessRaw.includes("n")) access += 32; // "n" for unknown
         }
 
-        const user = await global.db.findOne("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
+        const user = await global.internalDB.findOne("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
         if (!user) {
             console.log("User not found");
             process.exit(1);
         }
 
         const user_id = user._id;
-        await global.db.updateOneOrAdd("perm", { u: user_id, to: db_name }, { p: access }, {}, {}, false);
+        await global.internalDB.updateOneOrAdd("perm", { u: user_id, to: db_name }, { p: access }, {}, {}, false);
         console.log("Done");
         process.exit(0);
     });
@@ -157,14 +158,14 @@ program
     .alias("rua")
     .description("Remove user access from a database")
     .action(async (user_id_or_login, db_name) => {
-        const user = await global.db.findOne("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
+        const user = await global.internalDB.findOne("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
         if (!user) {
             console.log("User not found");
             process.exit(1);
         }
 
         const user_id = user._id;
-        await global.db.removeOne("perm", { u: user_id, to: db_name });
+        await global.internalDB.removeOne("perm", { u: user_id, to: db_name });
         console.log("Done");
         process.exit(0);
     });
@@ -174,7 +175,7 @@ program
     .alias("gt")
     .description("Get a token for a user")
     .action(async (user_id_or_login, match_chars) => {
-        const user = await global.db.findOne("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
+        const user = await global.internalDB.findOne("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
         if (!user) {
             console.log("User not found");
             process.exit(1);

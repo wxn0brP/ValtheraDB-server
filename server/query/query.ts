@@ -90,7 +90,7 @@ router.post("/:parserType", async (req, res) => {
         if (!collection) {
             return res.status(400).json({ err: true, msg: "collection is required" });
         }
-        if (!isPathSafe(global.baseDir, collection)) {
+        if (!isPathSafe(global.baseDir, req.dbDir, collection)) {
             return res.status(400).json({ err: true, msg: "invalid collection" });
         }
 

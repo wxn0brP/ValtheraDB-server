@@ -19,9 +19,9 @@
 	"license": "MIT",
 	"type": "module",
 	"dependencies": {
-		"@wxn0brp/db": "^0.5.1",
-		"@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",
+		"@wxn0brp/db": "github:wxn0brP/ValtheraDB#dist",
 		"@wxn0brp/valthera-db-string-query": "github:wxn0brP/ValtheraDB-string-query#dist",
+		"@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",
 		"body-parser": "^1.20.3",
 		"commander": "^13.1.0",
 		"cors": "^2.8.5",

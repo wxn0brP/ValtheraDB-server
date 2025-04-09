@@ -2,14 +2,15 @@ import { Id } from "@wxn0brp/db";
 import NodeCache from "node-cache";
 
 const PERM_CACHE_TTL = parseInt(process.env.PERM_CACHE_TTL) || 900; // 15 minutes
-const cache = new NodeCache({ stdTTL: PERM_CACHE_TTL, checkperiod: PERM_CACHE_TTL });
+export const cache = new NodeCache({ stdTTL: PERM_CACHE_TTL, checkperiod: PERM_CACHE_TTL });
 
 export enum Permissions {
-    ADD = 1,
-    REMOVE = 2,
-    UPDATE = 4,
-    COLLECTION = 8,
-    UNKNOWN = 16,
+    FIND = 1,
+    ADD = 2,
+    REMOVE = 4,
+    UPDATE = 8,
+    COLLECTION = 16,
+    UNKNOWN = 32,
 }
 
 export function hasPermission(userPermissions: number, requiredPermission: number): boolean {
@@ -39,13 +40,13 @@ async function getUserPermissions(user: Id, dataCenter: string): Promise<number>
     const cacheKey = user + "=" + dataCenter;
     if (cache.has(cacheKey)) return cache.get<number>(cacheKey);
 
-    const dataCenterPermissions = await global.db.findOne("perm", { u: user, to: dataCenter });
+    const dataCenterPermissions = await global.internalDB.findOne("perm", { u: user, to: dataCenter });
     if (dataCenterPermissions) {
         cache.set(cacheKey, dataCenterPermissions.p);
         return dataCenterPermissions.p;
     }
 
-    const globalUserPermissions = await global.db.findOne("perm", { u: user, to: "$" });
+    const globalUserPermissions = await global.internalDB.findOne("perm", { u: user, to: "$" });
     if (globalUserPermissions) {
         cache.set(cacheKey, globalUserPermissions.p);
         return globalUserPermissions.p;
