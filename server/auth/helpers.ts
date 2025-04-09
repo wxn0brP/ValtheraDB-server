@@ -6,11 +6,11 @@ function sha(str: string) {
     return crypto.createHash("sha256").update(str).digest("hex");
 }
 
-export async function generateToken(payload: any) {
+export async function generateToken(payload: any, time: string | number | boolean = false) {
     if (!payload) throw new Error("Payload is required");
     if (!payload._id) payload._id = genId();
 
-    const token = await jwtManager.create(payload, false);
+    const token = await jwtManager.create(payload, time);
     const exists = await global.internalDB.findOne("token", { _id: payload._id });
     if (!exists) await global.internalDB.add("token", { _id: payload._id, sha: sha(token) });
 

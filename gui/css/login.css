@@ -64,7 +64,7 @@ h2 {
     margin-top: 20px;
 }
 
-.input-box input {
+.input-box :where(input, select) {
     position: relative;
     width: 100%;
     padding: 15px 10px 10px;
@@ -89,7 +89,9 @@ h2 {
 }
 
 .input-box input:valid~label,
-.input-box input:focus~label {
+.input-box input:focus~label,
+.input-box select:valid~label,
+.input-box select:focus~label {
     color: #E0B73C;
     transform: translateY(-34px);
     font-size: 0.75em;
@@ -109,7 +111,9 @@ h2 {
 }
 
 .input-box input:valid~i,
-.input-box input:focus~i {
+.input-box input:focus~i,
+.input-box select:valid~i,
+.input-box select:focus~i {
     height: 44px;
     background: rgba(224, 183, 60, 0.08);
 }
@@ -356,7 +360,6 @@ input[type="submit"] {
 }
 
 @keyframes fadeOutAfterDelay {
-
     0%,
     50% {
         opacity: 1;
@@ -377,7 +380,7 @@ input[type="submit"] {
         padding: 25px 15px;
     }
 
-    .input-box input {
+    .input-box :where(input, select) {
         padding: 15px 8px 8px;
         font-size: 14px;
     }

@@ -171,10 +171,10 @@ program
     });
 
 program
-    .command("get-token <user_id_or_login> [match_chars]")
+    .command("get-token <user_id_or_login> [time] [match_chars]")
     .alias("gt")
     .description("Get a token for a user")
-    .action(async (user_id_or_login, match_chars) => {
+    .action(async (user_id_or_login, time, match_chars) => {
         const user = await global.internalDB.findOne("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
         if (!user) {
             console.log("User not found");
@@ -182,7 +182,13 @@ program
         }
         await initKeys();
 
-        const token = await generateToken({ uid: user._id });
+        if (!isNaN(parseInt(time))) time = parseInt(time);
+        if (time === "true") time = true;
+        if (time === "false") time = false;
+
+        if (typeof time === "undefined" || time === null) time = false;
+
+        const token = await generateToken({ uid: user._id }, time);
         if (match_chars) {
             console.log(match_chars + token + match_chars);
         } else {

@@ -43,13 +43,13 @@ export async function authMiddleware(req, res, next) {
     }
 }
 
-export async function loginFunction(login: string, password: string) {
+export async function loginFunction(login: string, password: string, time: string | number | boolean = false) {
     const { err, user } = await checkUserAccess(login, password);
     if (err) {
         return { err: true, msg: "Invalid login or password." };
     }
 
-    const token = await generateToken({ uid: user._id });
+    const token = await generateToken({ uid: user._id }, time);
     cache.set(token, user);
     return { err: false, token };
 }

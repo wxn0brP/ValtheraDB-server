@@ -8,6 +8,8 @@ const tokenContainer = document.querySelector(".token-container");
 const tokenValue = document.querySelector(".token-value");
 const copyBtn = document.querySelector(".copy-btn");
 const copiedMessage = document.querySelector(".copied-message");
+const timeSelect = document.querySelector("#time");
+const customTimeInput = document.querySelector("#custom-time");
 
 // Toggle custom URL input field
 document.querySelector(".custom-url-toggle").addEventListener("change", () => {
@@ -15,6 +17,11 @@ document.querySelector(".custom-url-toggle").addEventListener("change", () => {
 });
 
 customUrlCheckbox.checked = false; // Default to unchecked
+
+// Show/hide custom time input based on selection
+timeSelect.addEventListener("change", () => {
+    customTimeInput.style.display = timeSelect.value === "custom" ? "block" : "none";
+});
 
 // Copy to clipboard functionality
 copyBtn.addEventListener("click", function () {
@@ -57,10 +64,24 @@ form.addEventListener("submit", function (e) {
         }
     }
 
+    // Get time value
+    let timeValue = "true"; // Default value
+    if (timeSelect.value === "custom") {
+        const customTime = customTimeInput.value.trim();
+        if (customTime !== "") {
+            timeValue = customTime; // Use custom time if provided
+        }
+    } else if (timeSelect.value === "") {
+        timeValue = "false"; // Permanent
+    } else {
+        timeValue = timeSelect.value; // Use selected predefined time
+    }
+
     // Prepare data for submission
     const data = {
         login: loginValue,
-        password: passwordValue
+        password: passwordValue,
+        time: timeValue
     };
 
     // Send POST request

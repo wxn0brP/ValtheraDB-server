@@ -4,11 +4,21 @@ import express from "express";
 const onceRouter = express.Router();
 
 onceRouter.post("/login", async (req, res) => {
-    const { login, password } = req.body;
-    if(!login || !password) return res.json({ err: true, msg: "Login and password are required" });
-    
+    const { login, password, time } = req.body;
+    if (!login || !password) return res.json({ err: true, msg: "Login and password are required" });
+
+    if (
+        time !== undefined && (
+            typeof time !== "string" &&
+            time !== "true" &&
+            time !== "false" &&
+            !isNaN(parseInt(time))
+        )
+    )
+        return res.json({ err: true, msg: "Invalid time." })
+
     const { err, token } = await loginFunction(login, password);
-    if(err) return res.json({ err: true, msg: "Invalid login or password." });
+    if (err) return res.json({ err: true, msg: "Invalid login or password." });
     res.json({ err: false, token });
 });
 
