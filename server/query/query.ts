@@ -6,12 +6,12 @@ import { ValtheraDbParsers } from "@wxn0brp/valthera-db-string-query";
 import { ValtheraParser, ValtheraQuery } from "@wxn0brp/valthera-db-string-query/dist/types";
 const router = Router();
 
-const ValtheraParsers: Record<string, ValtheraParser> = {};
+export const ValtheraParsers: Record<string, ValtheraParser> = {};
 for (const [name, parser] of Object.entries(ValtheraDbParsers)) {
     ValtheraParsers[name] = new parser();
 }
 
-function getDb(name: string) {
+export function getDb(name: string) {
     const dbData = global.dataCenter[name];
     if (!dbData) return null;
     return {
