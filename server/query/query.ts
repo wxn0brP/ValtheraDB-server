@@ -14,7 +14,10 @@ for (const [name, parser] of Object.entries(ValtheraDbParsers)) {
 function getDb(name: string) {
     const dbData = global.dataCenter[name];
     if (!dbData) return null;
-    return dbData.db as Valthera;
+    return {
+        db: dbData.db as Valthera,
+        dir: dbData.dir
+    };
 }
 
 function findMatchingString(query: string, options: string[]): string | null {
@@ -50,10 +53,12 @@ router.post("/:parserType", async (req, res) => {
         return res.status(400).json({ err: true, msg: "Invalid parser type." });
     }
 
-    const db = getDb(dbName);
-    if (!db) {
+    const dbGet = getDb(dbName);
+    if (!dbGet) {
         return res.status(400).json({ err: true, msg: "Invalid data center." });
     }
+
+    const { db, dir } = dbGet;
 
     try {
         let query: ValtheraQuery;
@@ -90,7 +95,7 @@ router.post("/:parserType", async (req, res) => {
         if (!collection) {
             return res.status(400).json({ err: true, msg: "collection is required" });
         }
-        if (!isPathSafe(global.baseDir, req.dbDir, collection)) {
+        if (!isPathSafe(global.baseDir, dir, collection)) {
             return res.status(400).json({ err: true, msg: "invalid collection" });
         }
 
