@@ -1,4 +1,4 @@
-# ValtheraDB server
+# <img src="./gui/favicon.svg" alt="ValtheraDB" style="width: 32px;"> ValtheraDB server
 
 A simple file-based database server that leverages the @wxn0brp/db library.
 For more details, visit [this link](https://github.com/wxn0brP/ValtheraDB).
