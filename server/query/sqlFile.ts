@@ -49,7 +49,6 @@ router.post("/import", async (req, res) => {
 
         const results = [];
         for (const query of queries) {
-            console.log("Run", query.method, query.args);
             const collection = query.args.shift();
             const result = await db[query.method](collection, ...query.args as any[]);
             results.push(result);
