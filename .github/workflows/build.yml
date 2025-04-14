@@ -25,3 +25,5 @@ jobs:
         npm i
         npm run build
         cd ..
+      scriptsHandling: custom-list
+      customScripts: start,server,mgmt
