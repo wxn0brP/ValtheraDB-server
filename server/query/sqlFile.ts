@@ -2,7 +2,8 @@ import { Router } from "express";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
 import { getDb, ValtheraParsers } from "./query";
-import sqlSplitter from "../utils/sqlFile";
+import sqlSplitter from "../utils/sqlFileImport";
+import { SQLFileCreator } from "../utils/sqlFileExport";
 
 const router = Router();
 
@@ -59,6 +60,43 @@ router.post("/import", async (req, res) => {
         console.error(err);
         return res.status(500).json({ err: true, msg: err.message });
     }
+});
+
+router.post("/export", async (req, res) => {
+    const dbName = req.body.db;
+    const collections = req.body.collections as string[] || [];
+    console.log(collections);
+    const opts = req.body.opts || {};
+
+    if (!dbName) {
+        return res.status(400).json({ err: true, msg: "db is required" });
+    }
+
+    const dbGet = getDb(dbName);
+    if (!dbGet) {
+        return res.status(400).json({ err: true, msg: "Invalid data center." });
+    }
+
+    const { db, dir } = dbGet;
+
+    try {
+        const creator = new SQLFileCreator(db, opts);
+
+        if (collections.length > 0) {
+            for (const collection of collections) {
+                if (!isPathSafe(global.baseDir, dir, collection)) {
+                    return res.status(400).json({ err: true, msg: "Invalid collection: " + collection });
+                }
+            }
+        }
+
+        const result = await creator.create(collections);
+        return res.json({ err: false, result });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ err: true, msg: err.message });
+    }
+
 });
 
 export default router;

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL File Import</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="favicon.svg" type="image/x-icon">
+</head>
+<body style="padding-bottom: 1rem;">
+    <h1>Import SQL File</h1>
+
+    <!-- Database selection -->
+    <label for="db-select">Select Database:</label>
+    <select id="db-select" style="margin-bottom: 10px;"></select>
+    <br>
+
+    <!-- Collection selection -->
+    <label for="collection-select">Collections separated by , or leave empty for all collections:</label>
+    <input id="collection-select" style="margin-bottom: 10px;" />
+    <br>
+
+    <!-- Options selection -->
+    <label for="opts-select">Options (JSON):</label>
+    <input id="opts-select" style="margin-bottom: 10px;" />
+    <br>
+
+    <!-- Submit button -->
+    <button id="submit-btn">Export SQL</button>
+    <br>
+
+    <br>
+    <a id="download-link">Download SQL File</a>
+    <br>
+    <button id="copy-btn">Copy to Clipboard</button>
+    <br><br>
+
+    <!-- Result display -->
+    <pre id="result"></pre>
+
+    <script>
+        // DOM elements
+        const dbSelect = document.getElementById("db-select");
+        const collectionSelect = document.getElementById("collection-select");
+        const submitBtn = document.getElementById("submit-btn");
+        const optsSelect = document.getElementById("opts-select");
+        const resultDisplay = document.getElementById("result");
+        const a = document.getElementById("download-link");
+
+        document.getElementById("copy-btn").addEventListener("click", () => {
+            navigator.clipboard.writeText(resultDisplay.textContent);
+            alert("Copied to clipboard!");
+        });
+
+        // Load configuration from localStorage
+        const loadConfig = () => {
+            try {
+                const cfg = JSON.parse(localStorage.getItem("cfg"));
+                if (!cfg || !cfg.cfg || !cfg.baseCfg) {
+                    throw new Error("Invalid or missing configuration in localStorage");
+                }
+                return cfg;
+            } catch (error) {
+                console.error("Failed to load configuration:", error.message);
+                alert("Configuration not found or invalid. Please check localStorage.");
+                return null;
+            }
+        };
+
+        // Populate the database dropdown
+        const populateDbSelect = (cfg) => {
+            const { cfg: dbConfigs } = cfg;
+            const dbNames = Object.keys(dbConfigs);
+
+            dbSelect.innerHTML = ""; // Clear existing options
+
+            if (dbNames.length === 0) {
+                dbSelect.disabled = true;
+                alert("No databases available in configuration.");
+                return;
+            }
+
+            dbNames.forEach((dbName) => {
+                const option = document.createElement("option");
+                option.value = dbName;
+                option.textContent = dbName;
+                dbSelect.appendChild(option);
+            });
+
+            dbSelect.disabled = false;
+        };
+
+        // Initialize the page
+        const init = () => {
+            const cfg = loadConfig();
+            if (!cfg) return;
+
+            populateDbSelect(cfg);
+        };
+
+        // Event listener for button click
+        submitBtn.addEventListener("click", async () => {
+            try {
+                // Get selected database name
+                const selectedDb = dbSelect.value;
+                if (!selectedDb) {
+                    throw new Error("Please select a database");
+                }
+
+                // Load configuration again to ensure it's up-to-date
+                const cfg = loadConfig();
+                if (!cfg) throw new Error("Configuration not found");
+
+                // Get base configuration
+                const { baseCfg, cfg: dbConfigs } = cfg;
+                const { url, auth } = baseCfg;
+
+                // Merge base configuration with custom database configuration
+                const dbConfig = { ...baseCfg, ...dbConfigs[selectedDb] };
+
+                // Validate database configuration
+                if (!dbConfig.auth) {
+                    throw new Error("Invalid database configuration");
+                }
+
+                // Prepare request data
+                const requestData = {
+                    db: selectedDb
+                };
+
+                const collections = collectionSelect.value.trim().split(",").map(c => c.trim()).filter(c => c.length > 0);
+                if (collections.length > 0) requestData.collections = collections;
+
+                if (optsSelect.value.trim().length > 0) {
+                    const opts = JSON.parse(optsSelect.value);
+                    if (typeof opts !== "object") {
+                        throw new Error("Invalid options");
+                    }
+                    requestData.opts = opts;
+                }
+
+                // Send request to /sql/import
+                const response = await fetch((dbConfig.url || "") + "/sql/export", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": dbConfig.auth
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.msg || "Request failed");
+                }
+
+                const res = await response.json();
+                if (res.err) throw new Error(res.msg);
+
+                const blob = new Blob([res.result], { type: "text/plain;charset=utf-8" });
+                const urlData = URL.createObjectURL(blob);
+                a.href = urlData;
+                a.download = "export.sql";
+                a.addEventListener("click", () => {
+                    URL.revokeObjectURL(urlData);
+                });
+
+                // Display result
+                resultDisplay.textContent = res.result;
+            } catch (error) {
+                // Display error
+                resultDisplay.textContent = `Error: ${error.message}`;
+            }
+        });
+
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>

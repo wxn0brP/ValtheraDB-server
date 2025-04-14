@@ -1,4 +1,3 @@
-
 const unsupportedCommands = [
     "CREATE DATABASE",
     "USE",
