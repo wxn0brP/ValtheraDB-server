@@ -8,16 +8,16 @@ export interface Opts {
 
 function sqlEscapeString(raw: string): string {
     return `'` + raw
-      .replace(/\\/g, '\\\\')     // backslash
-      .replace(/\0/g, '\\0')      // null
-      .replace(/\n/g, '\\n')      // newline
-      .replace(/\r/g, '\\r')      // carriage return
-      .replace(/\t/g, '\\t')      // tab
-      .replace(/\x1a/g, '\\Z')    // Ctrl+Z
-      .replace(/'/g, "''")        // single quote
-      + `'`;
-  }
-  
+        .replace(/\\/g, '\\\\')     // backslash
+        .replace(/\0/g, '\\0')      // null
+        .replace(/\n/g, '\\n')      // newline
+        .replace(/\r/g, '\\r')      // carriage return
+        .replace(/\t/g, '\\t')      // tab
+        .replace(/\x1a/g, '\\Z')    // Ctrl+Z
+        .replace(/'/g, "''")        // single quote
+        + `'`;
+}
+
 
 function mapJsTypeToSqlType(value: any) {
     const type = typeof value;
@@ -112,21 +112,25 @@ export class SQLFileCreator {
         const data = await this.db.find(collectionName, {});
         const keys = getCollectionStruct(data);
 
-        const createIfNotExist = this.opts.createIfNotExist ?
-            `CREATE TABLE IF NOT EXISTS ${collectionName} (${Array.from(keys).map(([k, v]) => `${k} ${v}`).join(", ")});` :
-            null;
+        let createIfNotExist = null;
+        if (this.opts.createIfNotExist) {
+            const construct = Array.from(keys).map(([k, v]) => `${k} ${v}`).join(", ");
+            if (construct.trim().length > 0) {
+                createIfNotExist = `CREATE TABLE IF NOT EXISTS ${collectionName} (${construct});`
+            }
+        }
 
         const enter = this.opts.enterAfterValue ? "\n" : "";
-
         const order = Array.from(keys).map(([k]) => k);
-
         let insert = null;
 
         if (data.length > 0) {
-            insert =
-                `INSERT INTO ${collectionName} (${order.join(", ")}) VALUES ` + enter +
-                data.map(d => "(" + processDataToOrder(d, order) + ")").join(", " + enter)
-                +`;`+enter;
+            insert = `INSERT INTO ${collectionName} (${order.join(", ")}) VALUES `;
+            insert += enter;
+            insert += 
+                data.map(d => "(" + processDataToOrder(d, order) + ")")
+                .join(", " + enter)
+            insert += `;` + enter;
         }
 
         return {

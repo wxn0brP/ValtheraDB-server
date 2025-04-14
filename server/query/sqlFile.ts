@@ -65,7 +65,6 @@ router.post("/import", async (req, res) => {
 router.post("/export", async (req, res) => {
     const dbName = req.body.db;
     const collections = req.body.collections as string[] || [];
-    console.log(collections);
     const opts = req.body.opts || {};
 
     if (!dbName) {
