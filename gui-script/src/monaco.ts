@@ -42,7 +42,7 @@ export { monaco }
 export function setDatabases(dbs: string[], graphs: string[]) {
     const dbsType = `
       declare var db: { 
-        ${dbs.map(name => `${name}: V_DataBaseRemote<VC_${name}>    `).join(', ')},
+        ${dbs.map(name => `${name}: V_ValtheraRemote<VC_${name}>    `).join(', ')},
         ${graphs.map(name => `${name}: V_GraphRemote<VC_${name}>    `).join(', ')}
       };
     `.replaceAll(",,", ",");

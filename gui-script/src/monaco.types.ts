@@ -10,7 +10,7 @@ declare interface Cfg {
     url?: string;
     name?: string;
     auth?: string;
-    type?: "database" | "graph";
+    type?: "valthera" | "graph";
 }
 declare type CfgR = Record<string, Cfg>;`,
     'ts:valthera-cfg.d.ts');
@@ -42,9 +42,9 @@ function extractOriginalTypes(content: string): string[] {
 async function loadTypes(files: string[]) {
     let typeDefs = await Promise.all(files.map(loadTypeDef));
     let originalTypes: string[] = [
-        "V_DataBase",
+        "V_Valthera",
         "V_Graph",
-        "V_DataBaseRemote",
+        "V_ValtheraRemote",
         "V_GraphRemote",
     ];
 
@@ -85,9 +85,9 @@ async function loadDbType(file: string, name: string) {
 
 async function loadDbTypes() {
     const types = await Promise.all([
-        loadDbType("database.d.ts", "DataBase"),
-        loadDbType("client/database.d.ts", "DataBaseRemote"),
-        loadDbType("graph.d.ts", "Graph"),
+        loadDbType("db/valthera.d.ts", "Valthera"),
+        loadDbType("client/valthera.d.ts", "ValtheraRemote"),
+        loadDbType("db/graph.d.ts", "Graph"),
         loadDbType("client/graph.d.ts", "GraphRemote"),
     ]);
 
@@ -99,7 +99,7 @@ async function loadDbTypes() {
 export async function loadMonacoTypes() {
     const typesList = await fetch("./ts/list").then((res) => res.json());
     await loadTypes([
-        "CollectionManager.d.ts",
+        "helpers/CollectionManager.d.ts",
         ...typesList,
     ]);
     await loadDbTypes();
