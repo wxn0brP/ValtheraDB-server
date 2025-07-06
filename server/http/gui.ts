@@ -1,15 +1,16 @@
-import express from "express";
-const router = express.Router();
+import { Router } from "@wxn0brp/falcon-frame";
+const router = new Router();
 import fs from "fs";
 
 const dbPath = "node_modules/@wxn0brp/db/dist/";
+console.log("gui enabled");
 
 router.get("/login", (req, res) => {
-    res.sendFile("login.html", { root: "gui" });
+    res.sendFile("gui/login.html");
 });
-router.use("/", express.static("gui"));
-router.use("/js", express.static("gui-script/dist"));
-router.use("/ts", express.static(dbPath));
+router.static("/", "gui");
+router.static("/ts", dbPath);
+router.static("/js", "gui-script/dist");
 
 router.get("/ts/list", (req, res) => {
     const files = fs.readdirSync(dbPath+"/types", { recursive: true, withFileTypes: true })

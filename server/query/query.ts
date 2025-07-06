@@ -1,10 +1,10 @@
-import { Router } from "express";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
 import { Valthera } from "@wxn0brp/db";
+import { Router } from "@wxn0brp/falcon-frame";
 import { ValtheraDbParsers } from "@wxn0brp/valthera-db-string-query";
 import { ValtheraParser, ValtheraQuery } from "@wxn0brp/valthera-db-string-query/dist/types";
-const router = Router();
+const router = new Router();
 
 export const ValtheraParsers: Record<string, ValtheraParser> = {};
 for (const [name, parser] of Object.entries(ValtheraDbParsers)) {

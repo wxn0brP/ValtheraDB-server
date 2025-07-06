@@ -5,11 +5,20 @@ declare global {
     var internalDB: Valthera;
     var dataCenter: {
         [key: string]:
-            (
-                { type: "database", db: Valthera } |
-                { type: "graph", db: Graph }
-            ) & { dir: string }
-        };
+        (
+            { type: "database", db: Valthera } |
+            { type: "graph", db: Graph }
+        ) & { dir: string }
+    };
+}
+
+declare module "@wxn0brp/falcon-frame" {
+    interface FFRequest {
+        dataCenter: Valthera | Graph;
+        dbType: "database" | "graph";
+        dbDir: string;
+        user: { _id: string };
+    }
 }
 
 export interface DataBaseBuilder {
@@ -20,4 +29,4 @@ export interface DataBaseBuilder {
     parser: string;
 }
 
-export {}
+export { }

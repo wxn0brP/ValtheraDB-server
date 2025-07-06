@@ -1,8 +1,8 @@
-import { Router } from "express";
 import deserializeFunctions from "./function";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
-const router = Router();
+import { Router } from "@wxn0brp/falcon-frame";
+const router = new Router();
 
 router.post('/:type', async (req, res) => {
     const { type } = req.params as { type: string };

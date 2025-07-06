@@ -7,4 +7,4 @@ global.baseDir = process.env.BASE_DIR || process.cwd();
 await initKeys();
 
 console.log("baseDir", global.baseDir);
-await import("./express");
+await import("./http");

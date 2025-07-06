@@ -2,11 +2,12 @@ import NodeCache from "node-cache";
 import { checkUserAccess, generateToken } from "./helpers";
 import jwtManager from "../init/keys";
 import Id from "@wxn0brp/db/dist/types/Id";
+import { RouteHandler } from "@wxn0brp/falcon-frame";
 
 const TOKEN_CACHE_TTL = parseInt(process.env.TOKEN_CACHE_TTL) || 900; // 15 minutes
 const cache = new NodeCache({ stdTTL: TOKEN_CACHE_TTL, checkperiod: TOKEN_CACHE_TTL });
 
-export async function authMiddleware(req, res, next) {
+export const authMiddleware: RouteHandler = async (req, res, next) => {
     const token = req.headers["authorization"];
     if (!token) {
         return res.status(401).json({ err: true, msg: "Access denied. No token provided." });

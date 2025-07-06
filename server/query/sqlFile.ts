@@ -1,11 +1,11 @@
-import { Router } from "express";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
 import { getDb, ValtheraParsers } from "./query";
 import sqlSplitter from "../utils/sqlFileImport";
 import { SQLFileCreator } from "../utils/sqlFileExport";
+import { Router } from "@wxn0brp/falcon-frame";
 
-const router = Router();
+const router = new Router();
 
 router.post("/import", async (req, res) => {
     const dbName = req.body.db;

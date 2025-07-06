@@ -1,6 +1,11 @@
 import { Id, Relation, RelationTypes, Valthera, ValtheraRemote } from "@wxn0brp/db";
 import { Remote } from "@wxn0brp/db/dist/client/remote";
 
+import { isPathSafe } from "../utils/path";
+import { checkPermission } from "../utils/perm";
+import { Router } from "@wxn0brp/falcon-frame";
+const router = new Router();
+
 interface AccessCfg {
     [key: string]: Remote | string;
 }
@@ -49,12 +54,6 @@ function checkCollections(
     }
     return true;
 }
-
-import { Router } from "express";
-import deserializeFunctions from "./function";
-import { isPathSafe } from "../utils/path";
-import { checkPermission } from "../utils/perm";
-const router = Router();
 
 router.post('/:type', async (req, res) => {
     const { type } = req.params as { type: string };

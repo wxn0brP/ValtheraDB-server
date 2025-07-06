@@ -1,16 +1,14 @@
-import bodyParser from "body-parser";
-import cors from "cors";
-import express from "express";
+import FalconFrame from "@wxn0brp/falcon-frame";
 import apiRouter  from "./db";
 import onceRouter from "./once";
 
-const app = express();
+const app = new FalconFrame();
 app.get("/", (req, res) => res.send("Server is running."));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cors({
-    origin: "*",
-}));
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 app.use("/", onceRouter);
 
 if (process.env.gui) {
@@ -20,5 +18,5 @@ if (process.env.gui) {
 
 app.use("/", apiRouter);
 
-const port = process.env.PORT || 14785;
+const port = +process.env.PORT || 14785;
 app.listen(port, () => console.log(`Server started on port ${port}`));

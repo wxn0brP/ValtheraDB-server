@@ -1,7 +1,7 @@
+import { Router } from "@wxn0brp/falcon-frame";
 import { authMiddleware, loginFunction } from "../auth/auth";
-import express from "express";
 
-const onceRouter = express.Router();
+const onceRouter = new Router();
 
 onceRouter.post("/login", async (req, res) => {
     const { login, password, time } = req.body;
