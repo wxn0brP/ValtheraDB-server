@@ -1,4 +1,5 @@
 import { Graph, Valthera } from "@wxn0brp/db";
+import { GateWarden } from "@wxn0brp/gate-warden";
 
 declare global {
     var baseDir: string;
@@ -10,6 +11,7 @@ declare global {
             { type: "graph", db: Graph }
         ) & { dir: string }
     };
+    var warden: GateWarden;
 }
 
 declare module "@wxn0brp/falcon-frame" {

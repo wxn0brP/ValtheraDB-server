@@ -1,3 +1,4 @@
+import { UserManager } from "@wxn0brp/gate-warden";
 import { generateHash } from "../server/auth/helpers";
 
 export async function addUserAccess(login: string, password: string) {
@@ -14,9 +15,16 @@ export async function addUserAccess(login: string, password: string) {
         login,
         password
     });
+    const userMgmt = new UserManager(global.internalDB);
+    await userMgmt.createUser({ _id: user._id });
     return { err: false, user };
 }
 
 export async function removeUser(idOrLogin: string) {
-    return await global.internalDB.removeOne("user", { $or: [{ _id: idOrLogin }, { login: idOrLogin }] });
+    const userId = await global.internalDB.findOne("user", { $or: [{ _id: idOrLogin }, { login: idOrLogin }] });
+    if (!userId) return false;
+    await global.internalDB.removeOne("user", { _id: userId._id });
+    const userMgmt = new UserManager(global.internalDB);
+    await userMgmt.deleteUser(userId._id);
+    return true;
 }

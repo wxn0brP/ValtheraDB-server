@@ -6,7 +6,7 @@ import { generateToken } from "../server/auth/helpers.js";
 import { parsersList } from "../server/init/customParser.js";
 import { addUserAccess, removeUser } from "./mgmt.js";
 import { initKeys } from "../server/init/keys.js";
-configDotenv();
+configDotenv({ quiet: true });
 
 const program = new Command();
 global.internalDB = new Valthera(process.env.INTERNAL_VDB || "./serverDB");
@@ -108,65 +108,6 @@ program
             _id: u._id
         }));
         console.log(simplifiedUsers);
-        process.exit(0);
-    });
-
-program
-    .command("add-user-access <user_id_or_login> <db_name> <access>")
-    .alias("aua")
-    .description("Add user access to a database")
-    .addHelpText("after", `
-DB name:
-    - A string representing the name of the database
-    - "$" for all databases
-
-Access options:
-    - A number representing the access level (0-63, e.g., 7)
-    - A combination of flags: "f" (find), "a" (add), "r" (remove), "u" (update), "c" (collection), "n" (unknown)
-
-Example:
-    - "arcu" grants add, remove, update, and collection access.
-    - "7" is equivalent to "aru" (add, remove, update).
-    `)
-    .action(async (user_id_or_login, db_name, accessRaw) => {
-        let access = parseInt(accessRaw);
-
-        if (isNaN(access)) {
-            access = 0;
-            if (accessRaw.includes("f")) access += 1;  // "f" for find
-            if (accessRaw.includes("a")) access += 2;  // "a" for add
-            if (accessRaw.includes("r")) access += 4;  // "r" for remove
-            if (accessRaw.includes("u")) access += 8;  // "u" for update
-            if (accessRaw.includes("c")) access += 16; // "c" for collection
-            if (accessRaw.includes("n")) access += 32; // "n" for unknown
-        }
-
-        const user = await global.internalDB.findOne("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
-        if (!user) {
-            console.log("User not found");
-            process.exit(1);
-        }
-
-        const user_id = user._id;
-        await global.internalDB.updateOneOrAdd("perm", { u: user_id, to: db_name }, { p: access }, {}, {}, false);
-        console.log("Done");
-        process.exit(0);
-    });
-
-program
-    .command("remove-user-access <user_id_or_login> <db_name>")
-    .alias("rua")
-    .description("Remove user access from a database")
-    .action(async (user_id_or_login, db_name) => {
-        const user = await global.internalDB.findOne("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
-        if (!user) {
-            console.log("User not found");
-            process.exit(1);
-        }
-
-        const user_id = user._id;
-        await global.internalDB.removeOne("perm", { u: user_id, to: db_name });
-        console.log("Done");
         process.exit(0);
     });
 

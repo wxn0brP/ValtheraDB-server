@@ -3,10 +3,12 @@ import { DataBaseBuilder } from "../types";
 import parsers, { loadParsers } from "./customParser";
 import { watch } from "fs";
 import { cache } from "../utils/perm";
+import { GateWarden } from "@wxn0brp/gate-warden";
 
 const internalVDB = process.env.INTERNAL_VDB || "./serverDB";
 global.internalDB = new Valthera(internalVDB);
 global.dataCenter = {};
+global.warden = new GateWarden(global.internalDB);
 await loadParsers();
 
 async function loadDataBases() {

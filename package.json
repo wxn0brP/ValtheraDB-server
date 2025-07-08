@@ -21,10 +21,11 @@
 	"dependencies": {
 		"@wxn0brp/db": "github:wxn0brP/ValtheraDB#dist",
 		"@wxn0brp/falcon-frame": "^0.0.16",
+		"@wxn0brp/gate-warden": "^0.2.2",
 		"@wxn0brp/valthera-db-string-query": "github:wxn0brP/ValtheraDB-string-query#dist",
 		"@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",
 		"commander": "^14.0.0",
-		"dotenv": "^17.0.1",
+		"dotenv": "^17.1.0",
 		"node-cache": "^5.1.2"
 	},
 	"devDependencies": {
@@ -36,6 +37,7 @@
 		"build": "tsc && tsc-alias",
 		"start": "node ./dist/server/index.js",
 		"server": "node ./dist/server/index.js",
-		"mgmt": "node ./dist/serverMgmt/index.js"
+		"mgmt": "node ./dist/serverMgmt/index.js",
+		"right": "node ./dist/serverMgmt/warden.js"
 	}
 }
