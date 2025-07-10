@@ -1,0 +1,45 @@
+import NodeCache from "node-cache";
+import { checkUserAccess, generateToken } from "./helpers.js";
+import jwtManager from "../init/keys.js";
+const TOKEN_CACHE_TTL = parseInt(process.env.TOKEN_CACHE_TTL) || 900; // 15 minutes
+const cache = new NodeCache({ stdTTL: TOKEN_CACHE_TTL, checkperiod: TOKEN_CACHE_TTL });
+export const authMiddleware = async (req, res, next) => {
+    const token = req.headers["authorization"];
+    if (!token) {
+        return res.status(401).json({ err: true, msg: "Access denied. No token provided." });
+    }
+    if (cache.has(token)) {
+        const u = cache.get(token);
+        req.user = { _id: u };
+        return next();
+    }
+    try {
+        const data = await jwtManager.decode(token);
+        if (!data || !data.uid || !data._id) {
+            return res.status(401).json({ err: true, msg: "Invalid token." });
+        }
+        const tokenD = await global.internalDB.findOne("token", { _id: data._id });
+        if (!tokenD) {
+            return res.status(401).json({ err: true, msg: "Invalid token." });
+        }
+        const userD = await global.internalDB.findOne("user", { _id: data.uid });
+        if (!userD) {
+            return res.status(401).json({ err: true, msg: "Invalid token." });
+        }
+        req.user = { _id: data.uid };
+        cache.set(token, data.uid);
+        next();
+    }
+    catch (err) {
+        res.status(400).json({ err: true, msg: "An error occurred during authentication." });
+    }
+};
+export async function loginFunction(login, password, time = false) {
+    const { err, user } = await checkUserAccess(login, password);
+    if (err) {
+        return { err: true, msg: "Invalid login or password." };
+    }
+    const token = await generateToken({ uid: user._id }, time);
+    cache.set(token, user);
+    return { err: false, token };
+}

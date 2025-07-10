@@ -1,0 +1,132 @@
+:root {
+    --txt: #c9d6de;
+    --txtBold: #c9d6ff;
+    --back: #181818;
+    --a: #38baaf;
+    --aHover: #98DBC6;
+    --border: #5D3FD3;
+    --panel: #101111;
+    --accent: #5D3FD3;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: text;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+body {
+    background-color: var(--back);
+    color: var(--txt);
+}
+
+a {
+    color: var(--a);
+}
+
+a:hover {
+    color: var(--aHover);
+}
+
+#app {
+    width: 100%;
+}
+
+#editor {
+    width: 100%;
+    height: 300px;
+}
+
+* button, * select {
+    user-select: none;
+}
+
+main {
+    padding: 5px;
+    height: calc(100vh - 50px - 300px);
+}
+
+main button,
+main select {
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: var(--panel);
+    color: var(--txtBold);
+    transition: all 0.2s ease;
+    margin-right: 2rem;
+}
+
+main button:hover {
+    background-color: var(--accent);
+}
+
+nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px;
+    background-color: var(--panel);
+    height: 50px;
+    display: flex;
+    align-items: center;
+}
+
+nav select {
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: var(--panel);
+    color: var(--txtBold);
+    transition: all 0.2s ease;
+    margin-right: 1rem;
+}
+
+#result {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nested {
+    margin-left: 10px;
+    padding-left: 10px;
+    border-left: 2px solid var(--txt);
+}
+
+#display-type {
+    margin-left: 5px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--panel);
+    color: var(--txt);
+    border: 1px solid var(--border);
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid var(--border);
+    text-align: left;
+}
+
+th {
+    background-color: var(--accent);
+    color: var(--txtBold);
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: rgba(93, 63, 211, 0.1);
+}
+
+tr:hover {
+    background-color: rgba(56, 186, 175, 0.2);
+}
