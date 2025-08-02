@@ -37,7 +37,7 @@
 		"build": "tsc && tsc-alias",
 		"start": "node ./dist/server/index.js",
 		"server": "node ./dist/server/index.js",
-		"mgmt": "node ./dist/serverMgmt/index.js",
-		"right": "node ./dist/serverMgmt/warden.js"
+		"mgmt": "node ./dist/mgmt/index.js",
+		"right": "node ./dist/mgmt/warden.js"
 	}
 }
