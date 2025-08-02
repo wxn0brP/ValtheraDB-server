@@ -17,9 +17,10 @@ onceRouter.post("/login", async (req, res) => {
     )
         return res.json({ err: true, msg: "Invalid time." })
 
-    const { err, token } = await loginFunction(login, password);
-    if (err) return res.json({ err: true, msg: "Invalid login or password." });
-    res.json({ err: false, token });
+    const access = await loginFunction(login, password);
+    if (access.err == true) return res.json(access);
+
+    res.json({ err: false, token: access.token });
 });
 
 onceRouter.post("/getDbList", authMiddleware, async (req, res) => {

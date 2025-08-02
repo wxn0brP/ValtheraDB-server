@@ -1,8 +1,11 @@
+import { AnotherCache } from "@wxn0brp/ac";
 import { Id } from "@wxn0brp/db";
-import NodeCache from "node-cache";
 
 const PERM_CACHE_TTL = parseInt(process.env.PERM_CACHE_TTL) || 900; // 15 minutes
-export const cache = new NodeCache({ stdTTL: PERM_CACHE_TTL, checkperiod: PERM_CACHE_TTL });
+export const cache = new AnotherCache<boolean>({
+    ttl: PERM_CACHE_TTL,
+    cleanupInterval: PERM_CACHE_TTL,
+});
 
 export enum Permissions {
     FIND = 1,
@@ -25,7 +28,7 @@ export async function checkPermission(user: Id, operation: string, dataCenter: s
 
     for (const r of required) {
         const key = `${user}_${r}_${dataCenter}`;
-        if (cache.has(key)) return cache.get<boolean>(key);
+        if (cache.has(key)) return cache.get(key);
 
         const perm = await global.warden.hasAccess(user, dataCenter, r);
         cache.set(key, perm.granted);

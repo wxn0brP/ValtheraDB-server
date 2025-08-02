@@ -52,9 +52,9 @@ async function reloadDataBases() {
 global.internalDB.emiter.on("*", (req) => {
     if (req[0] !== "dbs") return;
     reloadDataBases();
-    cache.flushAll();
+    cache.clear();
 });
 watch(internalVDB + "/dbs", () => {
     reloadDataBases();
-    cache.flushAll();
+    cache.clear();
 });

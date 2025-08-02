@@ -1,11 +1,14 @@
-import NodeCache from "node-cache";
-import { checkUserAccess, generateToken } from "./helpers";
+import { checkUserAccess, generateToken, TokenTime } from "./helpers";
 import jwtManager from "../init/keys";
 import { RouteHandler } from "@wxn0brp/falcon-frame";
 import { Id } from "@wxn0brp/db";
+import { AnotherCache } from "@wxn0brp/ac";
 
 const TOKEN_CACHE_TTL = parseInt(process.env.TOKEN_CACHE_TTL) || 900; // 15 minutes
-const cache = new NodeCache({ stdTTL: TOKEN_CACHE_TTL, checkperiod: TOKEN_CACHE_TTL });
+const cache = new AnotherCache<Id>({
+    ttl: TOKEN_CACHE_TTL,
+    cleanupInterval: TOKEN_CACHE_TTL,
+});
 
 export const authMiddleware: RouteHandler = async (req, res, next) => {
     let token = req.headers["authorization"];
@@ -16,7 +19,7 @@ export const authMiddleware: RouteHandler = async (req, res, next) => {
     if (token.includes(" ")) token = token.split(" ")[1];
 
     if (cache.has(token)) {
-        const u = cache.get<Id>(token);
+        const u = cache.get(token);
         req.user = { _id: u };
         return next();
     }
@@ -46,13 +49,19 @@ export const authMiddleware: RouteHandler = async (req, res, next) => {
     }
 }
 
-export async function loginFunction(login: string, password: string, time: string | number | boolean = false) {
-    const { err, user } = await checkUserAccess(login, password);
-    if (err) {
-        return { err: true, msg: "Invalid login or password." };
-    }
+export type LoginResult = { err: true, msg: string } | { err: false, token: string };
 
+export async function loginFunction(
+    login: string,
+    password: string,
+    time: TokenTime = false
+): Promise<LoginResult> {
+    const access = await checkUserAccess(login, password);
+    if (access.err) return access as LoginResult;
+
+    const { user } = access;
     const token = await generateToken({ uid: user._id }, time);
-    cache.set(token, user);
+    cache.set(token, user._id);
+
     return { err: false, token };
 }

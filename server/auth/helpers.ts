@@ -7,7 +7,9 @@ function sha(str: string) {
     return crypto.createHash("sha256").update(str).digest("hex");
 }
 
-export async function generateToken(payload: any, time: string | number | boolean = false) {
+export type TokenTime = string | number | boolean;
+
+export async function generateToken(payload: any, time: TokenTime = false) {
     if (!payload) throw new Error("Payload is required");
     if (!payload._id) payload._id = genId();
 
