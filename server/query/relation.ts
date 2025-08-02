@@ -1,9 +1,9 @@
-import { Id, Relation, RelationTypes, Valthera, ValtheraRemote } from "@wxn0brp/db";
-import { Remote } from "@wxn0brp/db/dist/client/remote";
-
+import { Id, Relation, RelationTypes, Valthera, ValtheraCompatible } from "@wxn0brp/db";
+import { Remote, ValtheraRemote } from "@wxn0brp/db-client";
+import { Router } from "@wxn0brp/falcon-frame";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
-import { Router } from "@wxn0brp/falcon-frame";
+
 const router = new Router();
 
 interface AccessCfg {
@@ -11,7 +11,7 @@ interface AccessCfg {
 }
 
 async function createRelation(accessCfg: AccessCfg, userId: Id, res: any): Promise<Relation | false> {
-    const dbs: { [key: string]: Valthera | ValtheraRemote } = {};
+    const dbs: { [key: string]: ValtheraCompatible } = {};
 
     for (const key in accessCfg) {
         const remote = accessCfg[key];
@@ -77,9 +77,6 @@ router.post('/:type', async (req, res) => {
         const params = req.body.params as (Object | string)[];
         if (!params || params.length <= 2)
             return res.status(400).json({ err: true, msg: "params is required" });
-
-        // const keys = req.body.keys as string[];
-        // const parsedParams = deserializeFunctions(params, keys || []);
 
         const collection = params.shift() as string[];
         if (!collection || collection.length !== 2) 

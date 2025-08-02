@@ -116,7 +116,7 @@ program
     .alias("gt")
     .description("Get a token for a user")
     .action(async (user_id_or_login, time, match_chars) => {
-        const user = await global.internalDB.findOne("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
+        const user = await global.internalDB.findOne<{ _id: string }>("user", { $or: [{ login: user_id_or_login }, { _id: user_id_or_login }] });
         if (!user) {
             console.log("User not found");
             process.exit(1);

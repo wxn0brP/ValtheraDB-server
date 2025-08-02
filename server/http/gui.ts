@@ -3,7 +3,7 @@ const router = new Router();
 import fs from "fs";
 
 const dbPath = "node_modules/@wxn0brp/db/dist/";
-console.log("gui enabled");
+console.log("[GUI] gui enabled");
 
 router.get("/login", (req, res) => {
     res.sendFile("gui/login.html");

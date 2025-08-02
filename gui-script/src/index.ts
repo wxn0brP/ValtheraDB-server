@@ -1,7 +1,7 @@
-import { changeEditor } from "./monaco";
 import "./db";
-import { editorType, run } from "./run";
+import { changeEditor } from "./monaco";
 import { loadMonacoTypes } from "./monaco.types";
+import { editorType, run } from "./run";
 
 document.querySelector<HTMLButtonElement>("#run").addEventListener("click", run);
 window.addEventListener("keydown", (e) => {

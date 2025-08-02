@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import jwtManager from "../init/keys";
 import { genId } from "@wxn0brp/db";
+import { User } from "../types/user";
 
 function sha(str: string) {
     return crypto.createHash("sha256").update(str).digest("hex");
@@ -22,7 +23,7 @@ export async function removeToken(token: string) {
 }
 
 export async function checkUserAccess(login: string, password: string) {
-    const user = await global.internalDB.findOne("user", { login });
+    const user = await global.internalDB.findOne<User>("user", { login });
     if (!user) return { err: true, msg: "Invalid login or password." };
 
     const hash = generateHash(password);

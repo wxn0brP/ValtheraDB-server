@@ -1,7 +1,5 @@
 import { monaco, setDatabases } from "./monaco";
-import ValtheraRemoteClass from "../node_modules/ValtheraDB/cdn-dist/valthera.js";
-import GraphRemoteClass from "../node_modules/ValtheraDB/cdn-dist/graph.js";
-import { ValtheraRemote, GraphRemote } from "@wxn0brp/db";
+import { GraphRemote, ValtheraRemote } from "@wxn0brp/db-client";
 
 interface AddDatabaseOpts {
     url?: string;
@@ -36,11 +34,11 @@ export function initDatabases() {
         const cfg = getDbConfig(key);
         switch (cfg.type) {
             case "valthera":
-                instance = new ValtheraRemoteClass(cfg);
+                instance = new ValtheraRemote(cfg);
                 dbs.push(key);
                 break;
             case "graph":
-                instance = new GraphRemoteClass(cfg);
+                instance = new GraphRemote(cfg);
                 graphs.push(key);
                 break;
             default:

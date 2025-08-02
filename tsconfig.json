@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         "module": "ES2022",
-        "moduleResolution": "node",
         "target": "ES2022",
+        "moduleResolution": "bundler",
         "outDir": "./dist",
         "esModuleInterop": true,
         "allowArbitraryExtensions": true,
@@ -10,7 +10,7 @@
     },
     "include": [
         "server",
-        "serverMgmt"
+        "mgmt"
     ],
     "exclude": [
         "node_modules"

@@ -3,7 +3,7 @@ import { checkPermission } from "../utils/perm";
 import { Valthera } from "@wxn0brp/db";
 import { Router } from "@wxn0brp/falcon-frame";
 import { ValtheraDbParsers } from "@wxn0brp/valthera-db-string-query";
-import { ValtheraParser, ValtheraQuery } from "@wxn0brp/valthera-db-string-query/dist/types";
+import { ValtheraParser, ValtheraQuery } from "@wxn0brp/valthera-db-string-query/types";
 const router = new Router();
 
 export const ValtheraParsers: Record<string, ValtheraParser> = {};

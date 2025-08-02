@@ -2,7 +2,23 @@ import deserializeFunctions from "./function";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
 import { Router } from "@wxn0brp/falcon-frame";
+import { ValtheraCompatible } from "@wxn0brp/db";
+
 const router = new Router();
+
+router.use((req, res, next) => {
+    const dbName = req.body.db;
+
+    if (!global.dataCenter[dbName]) {
+        return res.status(400).json({ err: true, msg: "Invalid data center." });
+    }
+
+    req.dataCenter = global.dataCenter[dbName].db as any;
+    req.dbType = global.dataCenter[dbName].type;
+    req.dbDir = global.dataCenter[dbName].dir;
+
+    next();
+});
 
 router.post('/:type', async (req, res) => {
     const { type } = req.params as { type: string };
@@ -12,7 +28,7 @@ router.post('/:type', async (req, res) => {
     }
 
     try {
-        const db = req.dataCenter;
+        const db = req.dataCenter as ValtheraCompatible;
         if (type === "getCollections") {
             const collections = await db.getCollections();
             return res.json({ err: false, result: collections });

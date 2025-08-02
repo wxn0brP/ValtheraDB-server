@@ -11,13 +11,13 @@
         "start": "node dist/index.js"
     },
     "devDependencies": {
-        "@types/node": "^24.0.10",
+        "@types/node": "^24.1.0",
         "tsc-alias": "^1.8.16",
-        "typescript": "^5.8.3"
+        "typescript": "^5.9.2"
     },
     "dependencies": {
-        "ValtheraDB": "github:wxn0brP/ValtheraDB#cdn-dist",
-        "esbuild": "^0.25.5",
+        "@wxn0brp/db-client": "latest",
+        "esbuild": "^0.25.8",
         "monaco-editor": "^0.52.2"
     }
 }

@@ -21,7 +21,7 @@ export async function addUserAccess(login: string, password: string) {
 }
 
 export async function removeUser(idOrLogin: string) {
-    const userId = await global.internalDB.findOne("user", { $or: [{ _id: idOrLogin }, { login: idOrLogin }] });
+    const userId = await global.internalDB.findOne<{ _id: string }>("user", { $or: [{ _id: idOrLogin }, { login: idOrLogin }] });
     if (!userId) return false;
     await global.internalDB.removeOne("user", { _id: userId._id });
     const userMgmt = new UserManager(global.internalDB);
