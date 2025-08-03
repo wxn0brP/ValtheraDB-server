@@ -1,16 +1,16 @@
 name: Deploy to GitHub Pages
 
 on:
-  workflow_run:
-    workflows: ["Build"]
-    types:
-      - completed
-    status: success
+  push:
+    branches:
+      - master
+    paths:
+      - gui/**
 
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: build-pages
   cancel-in-progress: true
 
 jobs:
