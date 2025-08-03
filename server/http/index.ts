@@ -8,10 +8,8 @@ app.use(createCORSPlugin(["*"]).process);
 app.get("/", () => "Server is running.");
 app.use(onceRouter);
 
-if (process.env.gui) {
-    const gui = await import("./gui");
-    app.use("/gui", gui.default);
-}
+app.static("/gui", "./gui");
+app.get("/gui", (req, res) => res.redirect("/gui/"));
 
 app.use(apiRouter);
 

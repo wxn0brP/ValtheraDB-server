@@ -21,7 +21,7 @@
 	"dependencies": {
 		"@wxn0brp/ac": "^0.0.1",
 		"@wxn0brp/db": "github:wxn0brP/ValtheraDB#dist",
-		"@wxn0brp/falcon-frame": "^0.0.20",
+		"@wxn0brp/falcon-frame": "^0.0.21",
 		"@wxn0brp/gate-warden": "^0.4.0",
 		"@wxn0brp/valthera-db-string-query": "github:wxn0brP/ValtheraDB-string-query#dist",
 		"@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",

@@ -1,38 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ValtheraDB GUI</title>
-        <link rel="stylesheet" href="css/style.css">
-        <link rel="stylesheet" href="js/index.css">
-        <link rel="shortcut icon" href="favicon.svg" type="image/x-icon">
-    </head>
-    <body>
-        <noscript>This page require JS to work</noscript>
-        <div id="app">
-           <div id="editor"></div>
-           <main>
-                <button id="run">Run</button>
-                Display type: 
-                <select id="display-type">
-                    <option value="table">Table</option>
-                    <option value="card">Card</option>
-                    <option value="raw">Raw</option>
-                </select>
-                <h2>Output</h2>
-                <div id="result"></div>
-           </main>
-           <nav>
-                <select id="editor-type">
-                    <option value="ts">Valthera DB</option>
-                    <option value="sql">SQL (simplified)</option>
-                    <option value="config">Edit config</option>
-                </select>
-                <select id="sql-db-select" style="display: none"></select>
-           </nav>
-        </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Tool</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="favicon.svg" type="image/x-icon">
+</head>
+<body>
+    <nav>
+        <a href="#/export">Export</a>
+        <a href="#/import">Import</a>
+        <button id="config-btn">Configure</button>
+    </nav>
 
-        <script src="js/index.js" type="module"></script>
-    </body>
+    <main id="app-root"></main>
+
+    <div id="config-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Configuration</h2>
+            <label for="url-input">Base URL:</label>
+            <input type="text" id="url-input" placeholder="http://localhost:8080">
+            <label for="auth-input">Auth Token (optional):</label>
+            <input type="text" id="auth-input">
+            <a href="/gui/login" target="_blank" style="font-size: 0.8rem; display: block; margin-top: -5px; margin-bottom: 10px;">Get Token</a>
+            <label for="db-name-input">Database Name:</label>
+            <input type="text" id="db-name-input">
+            <button id="save-config-btn">Save</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
 </html>

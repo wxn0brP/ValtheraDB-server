@@ -39,7 +39,8 @@ a:hover {
     height: 300px;
 }
 
-* button, * select {
+* button,
+* select {
     user-select: none;
 }
 
@@ -74,9 +75,12 @@ nav {
     height: 50px;
     display: flex;
     align-items: center;
+    gap: 1rem;
+    padding-left: 1rem;
 }
 
-nav select {
+nav select,
+nav button {
     padding: 5px 10px;
     border: 1px solid var(--border);
     border-radius: 5px;
@@ -87,46 +91,73 @@ nav select {
     margin-right: 1rem;
 }
 
-#result {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.nested {
-    margin-left: 10px;
-    padding-left: 10px;
-    border-left: 2px solid var(--txt);
-}
-
-#display-type {
-    margin-left: 5px;
-}
-
-table {
+.modal {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
     width: 100%;
-    border-collapse: collapse;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
     background-color: var(--panel);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid var(--border);
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
     color: var(--txt);
-    border: 1px solid var(--border);
 }
 
-th, td {
-    padding: 10px;
-    border: 1px solid var(--border);
-    text-align: left;
-}
-
-th {
-    background-color: var(--accent);
-    color: var(--txtBold);
+.close-btn {
+    color: var(--txt);
+    float: right;
+    font-size: 28px;
     font-weight: bold;
+    cursor: pointer;
 }
 
-tr:nth-child(even) {
-    background-color: rgba(93, 63, 211, 0.1);
+.close-btn:hover,
+.close-btn:focus {
+    color: var(--aHover);
+    text-decoration: none;
 }
 
-tr:hover {
-    background-color: rgba(56, 186, 175, 0.2);
+.modal-content input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: var(--back);
+    color: var(--txt);
+}
+
+.modal-content button {
+    width: 100%;
+    background-color: var(--accent);
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background-color: #45a049;
+}
+
+#collection-list {
+    margin-bottom: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    padding: 5px;
 }
