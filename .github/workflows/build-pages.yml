@@ -20,31 +20,6 @@ jobs:
     steps:
       - name: Checkout dist branch
         uses: actions/checkout@v4
-        with:
-          ref: dist
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install @wxn0brp/db
-        run: npm install @wxn0brp/db --no-save
-
-      - name: Prepare Static Files
-        run: |
-          mkdir -p public/ts
-          mkdir -p public/js
-          
-          for file in $(find node_modules/@wxn0brp/db/dist/ -type f -name "*.d.ts"); do
-            target="public/ts/$(echo "$file" | sed 's|node_modules/@wxn0brp/db/dist/||')"
-            mkdir -p "$(dirname "$target")"
-            cp "$file" "$target"
-          done
-
-          find public/ts/types -name "*.d.ts" | sed "s|public/ts/||" | jq -R . | jq -s -c . > public/ts/list
-          cp -r gui/* public
-          cp -r gui-script/dist/* public/js/
 
       - name: Upload to GitHub Pages
         run: |
@@ -54,10 +29,10 @@ jobs:
           git checkout --orphan gh-pages
 
           git reset -q HEAD --
-          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name 'public' -exec rm -rf {} +
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name 'gui' -exec rm -rf {} +
 
-          mv public/* .
-          rm -rf public
+          mv gui/* .
+          rm -rf gui
           git add -f -A .
 
           git commit -m "Deploy to gh-pages"
