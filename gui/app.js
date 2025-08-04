@@ -190,7 +190,7 @@ function renderImportView() {
             const res = await apiRequest("/sql/import", requestData);
             if (res.err) throw new Error(res.msg);
 
-            resultDisplay.textContent = JSON.stringify(res.result, null, 2);
+            resultDisplay.textContent = JSON.stringify(res, null, 2);
 
         } catch (error) {
             resultDisplay.textContent = `Error: ${error.message}`;

@@ -29,12 +29,13 @@
 		"dotenv": "^17.2.1"
 	},
 	"devDependencies": {
-		"@types/node": "^24.1.0",
+		"@types/node": "^24.2.0",
 		"tsc-alias": "^1.8.11",
 		"typescript": "^5.9.2"
 	},
 	"scripts": {
 		"build": "tsc && tsc-alias",
+		"bun": "bun run ./server/index.ts",
 		"start": "node ./dist/server/index.js",
 		"server": "node ./dist/server/index.js",
 		"mgmt": "node ./dist/mgmt/index.js",
