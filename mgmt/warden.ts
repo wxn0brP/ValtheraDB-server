@@ -1,6 +1,7 @@
 import { UserManager, WardenManager } from "@wxn0brp/gate-warden";
 import JSON5 from "json5";
 import { cliMeta } from "./wardenMeta";
+import { Valthera } from "@wxn0brp/db";
 
 const classes = {
     user: UserManager,
@@ -8,10 +9,11 @@ const classes = {
 };
 
 const dbPath = process.env.INTERNAL_VDB || "./serverDB";
+const db = new Valthera(dbPath);
 
 const classesConstructors = {
-    user: [dbPath],
-    mgr: [dbPath],
+    user: [db],
+    mgr: [db],
 };
 
 const [, , className, methodName, ...args] = process.argv;
