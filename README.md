@@ -50,26 +50,18 @@ Use the management command to configure or control the server:
 yarn mgmt
 ```
 
+And to run the right management command:
+
+```bash
+yarn right
+```
+
 ### Run Server
 
 Start the database server with the following command:
 
 ```bash
 yarn start
-```
-
-### GUI
-
-First, Compile the GUI:
-```bash
-cd gui-script
-yarn
-yarn build
-```
-
-Now, enable the GUI on .env:
-```bash
-gui=true
 ```
 
 ## Contributing
