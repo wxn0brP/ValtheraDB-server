@@ -1,6 +1,6 @@
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
-import { getDb, ValtheraParsers } from "./query";
+import { getDb, ValtheraParsers } from "./query/utils";
 import sqlSplitter from "../utils/sqlFileImport";
 import { SQLFileCreator } from "../utils/sqlFileExport";
 import { Router } from "@wxn0brp/falcon-frame";
@@ -9,8 +9,8 @@ const router = new Router();
 
 router.post("/import", async (req, res) => {
     const dbName = req.body.db;
-    const sqlContent = req.body.content; 
-    
+    const sqlContent = req.body.content;
+
     if (!dbName || !sqlContent) {
         return res.status(400).json({ err: true, msg: "db and content are required" });
     }
@@ -27,7 +27,7 @@ router.post("/import", async (req, res) => {
         if (!parser) {
             return res.status(400).json({ err: true, msg: "SQL parser not available." });
         }
- 
+
         const queriesSQL = sqlSplitter.parse(sqlContent);
         const queries = queriesSQL.map((querySQL) => parser.parse(querySQL));
 

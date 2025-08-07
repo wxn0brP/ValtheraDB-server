@@ -1,7 +1,7 @@
 import { ValtheraCompatible } from "@wxn0brp/db";
-import { checkPermission } from "../utils/perm";
-import deserializeFunctions from "./function";
-import { isPathSafe } from "../utils/path";
+import { checkPermission } from "../../utils/perm";
+import deserializeFunctions from "../function";
+import { isPathSafe } from "../../utils/path";
 import { FFResponse } from "@wxn0brp/falcon-frame";
 
 export interface Query {

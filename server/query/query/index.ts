@@ -1,42 +1,12 @@
-import { isPathSafe } from "../utils/path";
-import { checkPermission } from "../utils/perm";
-import { Valthera } from "@wxn0brp/db";
+import { isPathSafe } from "../../utils/path";
+import { checkPermission } from "../../utils/perm";
 import { Router } from "@wxn0brp/falcon-frame";
-import { ValtheraDbParsers } from "@wxn0brp/valthera-db-string-query";
-import { ValtheraParser, ValtheraQuery } from "@wxn0brp/valthera-db-string-query/types";
+import { ValtheraQuery } from "@wxn0brp/valthera-db-string-query/types";
+import { sqlProxy } from "./sql";
+import { getDb, getParser } from "./utils";
 const router = new Router();
 
-export const ValtheraParsers: Record<string, ValtheraParser> = {};
-for (const [name, parser] of Object.entries(ValtheraDbParsers)) {
-    ValtheraParsers[name] = new parser();
-}
-
-export function getDb(name: string) {
-    const dbData = global.dataCenter[name];
-    if (!dbData) return null;
-    return {
-        db: dbData.db as Valthera,
-        dir: dbData.dir
-    };
-}
-
-function findMatchingString(query: string, options: string[]): string | null {
-    const lowerQuery = query.toLowerCase();
-    const matches = options.filter(opt => opt.toLowerCase().includes(lowerQuery));
-    if (matches.length === 1) return matches[0];
-    if (matches.length === 0) return null;
-    return null;
-}
-
-function getParser(parserType: string) {
-    const parser = ValtheraParsers[parserType];
-    if(parser) return parser;
-
-    const parserName = findMatchingString(parserType, Object.keys(ValtheraParsers));
-    if(parserName) return ValtheraParsers[parserName];
-
-    return null;
-}
+router.post("/sql-proxy", sqlProxy);
 
 router.post("/:parserType", async (req, res) => {
     const dbName = req.body.db;
@@ -78,11 +48,11 @@ router.post("/:parserType", async (req, res) => {
             return res.json({ err: false, result: collections });
         }
 
-        if(!db[type] || typeof db[type] !== "function"){
+        if (!db[type] || typeof db[type] !== "function") {
             return res.status(400).json({ err: true, msg: "invalid type" });
         }
 
-        if(!await checkPermission(req.user._id, type, dbName)){
+        if (!await checkPermission(req.user._id, type, dbName)) {
             return res.status(403).json({ err: true, msg: "access denied" });
         }
 

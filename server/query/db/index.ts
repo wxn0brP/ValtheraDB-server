@@ -1,5 +1,5 @@
 import { Router } from "@wxn0brp/falcon-frame";
-import { dbLogic } from "./db.logic";
+import { dbLogic } from "./logic";
 
 const router = new Router();
 
