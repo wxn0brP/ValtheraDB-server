@@ -2,7 +2,7 @@
 
 The `/db/:type` endpoint allows direct method calls on a database instance.
 
-- `:type`: The method to execute (e.g., `find`, `insert`, `update`, `remove`).
+- `:type`: The method to execute (e.g., `find`, `add`, `update`, `remove`).
 
 **Body:**
 
@@ -13,7 +13,7 @@ The `/db/:type` endpoint allows direct method calls on a database instance.
 **Example: Insert a document**
 
 ```javascript
-fetch('http://localhost:14785/db/insert', {
+fetch('http://localhost:14785/db/add', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
