@@ -17,7 +17,6 @@ declare global {
 declare module "@wxn0brp/falcon-frame" {
     interface FFRequest {
         dataCenter: Valthera | Graph;
-        dbType: "database" | "graph";
         dbDir: string;
         user: { _id: string };
     }

@@ -1,68 +1,32 @@
-import deserializeFunctions from "./function";
-import { isPathSafe } from "../utils/path";
-import { checkPermission } from "../utils/perm";
 import { Router } from "@wxn0brp/falcon-frame";
-import { ValtheraCompatible } from "@wxn0brp/db";
+import { dbLogic } from "./db.logic";
 
 const router = new Router();
 
-router.use((req, res, next) => {
-    const dbName = req.body.db;
+router.post("/:type", async (req, res) => {
+    const result = await dbLogic({
+        type: req.params.type,
+        dbName: req.body.db,
+        userId: req.user._id,
+        params: req.body.params,
+        keys: req.body.keys || []
+    });
 
-    if (!global.dataCenter[dbName]) {
-        return res.status(400).json({ err: true, msg: "Invalid data center." });
-    }
-
-    req.dataCenter = global.dataCenter[dbName].db as any;
-    req.dbType = global.dataCenter[dbName].type;
-    req.dbDir = global.dataCenter[dbName].dir;
-
-    next();
+    result.ff(res);
 });
 
-router.post('/:type', async (req, res) => {
-    const { type } = req.params as { type: string };
+router.post("/:db/:type", async (req, res) => {
+    const collection = req.query?.c || "";
 
-    if (!type) {
-        return res.status(400).json({ err: true, msg: "type is required" });
-    }
+    const result = await dbLogic({
+        type: req.params.type,
+        dbName: req.params.db,
+        userId: req.user._id,
+        params: [collection, ...(req.body?.params || [])],
+        keys: req.body.keys || []
+    });
 
-    try {
-        const db = req.dataCenter as ValtheraCompatible;
-        if (type === "getCollections") {
-            const collections = await db.getCollections();
-            return res.json({ err: false, result: collections });
-        }
-
-        if(!db[type] || typeof db[type] !== "function"){
-            return res.status(400).json({ err: true, msg: "invalid type" });
-        }
-
-        if(!await checkPermission(req.user._id, type, req.body.db)){
-            return res.status(403).json({ err: true, msg: "access denied" });
-        }
-
-        const params = req.body.params as (Object | string)[];
-        if (!params || params.length === 0) return res.status(400).json({ err: true, msg: "params is required" });
-
-        const keys = req.body.keys as string[];
-        const parsedParams = deserializeFunctions(params, keys || []);
-
-        const collection = params.shift() as string;
-        if (!collection) {
-            return res.status(400).json({ err: true, msg: "collection is required" });
-        }
-        if (!isPathSafe(global.baseDir, req.dbDir, collection)) {
-            return res.status(400).json({ err: true, msg: "invalid collection" });
-        }
-
-        const result = await db[type](collection, ...parsedParams as any[]);
-
-        res.json({ err: false, result });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ err: true, msg: err.message });
-    }
+    result.ff(res);
 });
 
 export default router;
