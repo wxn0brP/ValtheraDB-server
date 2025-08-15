@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL Tool</title>
+    <title>Database Tool</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="shortcut icon" href="favicon.svg" type="image/x-icon">
 </head>
+
 <body>
     <nav>
-        <a href="#/export">Export</a>
-        <a href="#/import">Import</a>
+        <a href="#/sql-export">SQL Export</a>
+        <a href="#/sql-import">SQL Import</a>
+        <a href="#/csv-export">CSV Export</a>
+        <a href="#/csv-import">CSV Import</a>
         <button id="config-btn">Configure</button>
     </nav>
 
@@ -24,7 +28,8 @@
             <input type="text" id="url-input" placeholder="http://localhost:8080">
             <label for="auth-input">Auth Token (optional):</label>
             <input type="text" id="auth-input">
-            <a href="/gui/login" target="_blank" style="font-size: 0.8rem; display: block; margin-top: -5px; margin-bottom: 10px;">Get Token</a>
+            <a href="/gui/login" target="_blank"
+                style="font-size: 0.8rem; display: block; margin-top: -5px; margin-bottom: 10px;">Get Token</a>
             <label for="db-name-input">Database Name:</label>
             <input type="text" id="db-name-input">
             <button id="save-config-btn">Save</button>
@@ -33,4 +38,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>

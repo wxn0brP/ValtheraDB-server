@@ -79,6 +79,7 @@ router.post("/export", async (req, res) => {
     const { db, dir } = dbGet;
 
     try {
+        if (!await checkPermission(req.user._id, "find", dbName)) return res.status(403).json({ err: true, msg: "Access denied for query type: find" });
         const creator = new SQLFileCreator(db, opts);
 
         if (collections.length > 0) {

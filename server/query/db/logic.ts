@@ -1,4 +1,3 @@
-import { ValtheraCompatible } from "@wxn0brp/db";
 import { checkPermission } from "../../utils/perm";
 import deserializeFunctions from "../function";
 import { isPathSafe } from "../../utils/path";
