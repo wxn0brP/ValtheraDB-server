@@ -1,7 +1,7 @@
 import { checkPermission } from "../../utils/perm";
-import deserializeFunctions from "../function";
 import { isPathSafe } from "../../utils/path";
 import { FFResponse } from "@wxn0brp/falcon-frame";
+import { deserializeFunctions } from "@wxn0brp/wts-run-fn";
 
 export interface Query {
     type: string;
