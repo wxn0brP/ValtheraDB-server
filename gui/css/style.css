@@ -46,7 +46,8 @@ a:hover {
 
 main {
     padding: 5px;
-    height: calc(100vh - 50px - 300px);
+    min-height: calc(100vh - 50px);
+    padding-bottom: 70px;
 }
 
 main button,
