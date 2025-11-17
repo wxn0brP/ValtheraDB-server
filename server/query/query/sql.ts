@@ -1,5 +1,5 @@
 import { RouteHandler } from "@wxn0brp/falcon-frame";
-import { ValtheraDbParsers } from "@wxn0brp/valthera-db-string-query";
+import { ValtheraDbParsers } from "@wxn0brp/db-string-query";
 import { checkPermission } from "../../utils/perm";
 import { getDb } from "./utils";
 import { isPathSafe } from "../../utils/path";

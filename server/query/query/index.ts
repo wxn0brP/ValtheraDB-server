@@ -1,7 +1,7 @@
 import { isPathSafe } from "../../utils/path";
 import { checkPermission } from "../../utils/perm";
 import { Router } from "@wxn0brp/falcon-frame";
-import { ValtheraQuery } from "@wxn0brp/valthera-db-string-query/types";
+import { ValtheraQuery } from "@wxn0brp/db-string-query/types";
 import { sqlProxy } from "./sql";
 import { getDb, getParser } from "./utils";
 const router = new Router();

@@ -23,7 +23,7 @@
 		"@wxn0brp/db": "github:wxn0brP/ValtheraDB#dist",
 		"@wxn0brp/falcon-frame": "^0.2.0",
 		"@wxn0brp/gate-warden": "^0.4.1",
-		"@wxn0brp/valthera-db-string-query": "github:wxn0brP/ValtheraDB-string-query#dist",
+		"@wxn0brp/db-string-query": "github:wxn0brP/ValtheraDB-string-query#dist",
 		"@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",
 		"@wxn0brp/wts-run-fn": "github:wxn0brp/ts-shared#dist-run-fn",
 		"commander": "^14.0.1",

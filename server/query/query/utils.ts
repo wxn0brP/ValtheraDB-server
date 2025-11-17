@@ -1,6 +1,6 @@
 import { Valthera } from "@wxn0brp/db";
-import { ValtheraDbParsers } from "@wxn0brp/valthera-db-string-query";
-import { ValtheraParser } from "@wxn0brp/valthera-db-string-query/types";
+import { ValtheraDbParsers } from "@wxn0brp/db-string-query";
+import { ValtheraParser } from "@wxn0brp/db-string-query/types";
 
 export const ValtheraParsers: Record<string, ValtheraParser> = {};
 for (const [name, parser] of Object.entries(ValtheraDbParsers)) {
