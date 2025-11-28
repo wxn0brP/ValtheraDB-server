@@ -38,7 +38,7 @@ export class Response {
         };
         if (this.code) res.status(this.code);
         if (this.msg) response.msg = this.msg;
-        if (this.result) response.result = this.result;
+        if (this.result !== undefined) response.result = this.result;
         return res.json(response);
     }
 }
@@ -88,6 +88,7 @@ export async function dbLogic(query: Query): Promise<Response> {
         if (!isPathSafe(global.baseDir, dbDir, collection)) return res.e(Codes.INVALID_COLLECTION);
 
         const result = await db[type](collection, ...parsedParams as any[]);
+        console.log(result);
 
         return res.r(result);
     } catch (err) {

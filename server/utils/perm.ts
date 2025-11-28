@@ -24,6 +24,7 @@ export async function checkPermission(user: Id, operation: string, dataCenter: s
     if (op.includes("REMOVE")) required.push(Permissions.REMOVE);
     if (op.includes("UPDATE")) required.push(Permissions.UPDATE);
     if (op.includes("COLLECTION")) required.push(Permissions.COLLECTION);
+    if (op.includes("TOGGLE")) required.push(Permissions.REMOVE, Permissions.ADD);
     if (!required.length) required.push(Permissions.UNKNOWN);
 
     for (const r of required) {

@@ -1,10 +1,9 @@
 import FalconFrame from "@wxn0brp/falcon-frame";
-import apiRouter  from "./db";
+import apiRouter from "./db";
 import onceRouter from "./once";
-import { createCORSPlugin } from "@wxn0brp/falcon-frame/plugins/cors";
 
 const app = new FalconFrame();
-app.use(createCORSPlugin(["*"]).process);
+app.setOrigin("*");
 app.get("/", () => "Server is running.");
 app.use(onceRouter);
 
