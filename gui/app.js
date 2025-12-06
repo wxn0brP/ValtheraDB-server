@@ -32,6 +32,7 @@ function saveConfig() {
         auth: auth,
         dbName: dbName
     };
+    sessionStorage.setItem("config", JSON.stringify(config));
 
     hideConfigModal();
     router();
@@ -341,7 +342,22 @@ function router() {
     }
 }
 
+function loadConfig() {
+    const savedConfig = sessionStorage.getItem("config");
+    if (savedConfig) {
+        config = JSON.parse(savedConfig);
+        router();
+    } else {
+        showConfigModal();
+        router();
+    }
+}
+
+$("#logout-btn").addEventListener("click", () => {
+    sessionStorage.removeItem("config");
+    location.reload();
+});
+
 window.addEventListener("hashchange", router);
 
-showConfigModal();
-router();
+loadConfig();
