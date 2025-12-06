@@ -57,6 +57,48 @@ class SQLFileParser {
     }
 
     /**
+     * Extracts value tuples from the VALUES part of an INSERT statement.
+     * This method correctly handles parentheses within string literals.
+     * @param valuesPart The part of the SQL query that contains the values.
+     * @returns An array of value tuple strings.
+     */
+    private extractValues(valuesPart: string): string[] {
+        const values: string[] = [];
+        let parenLevel = 0;
+        let inString = false;
+        let quoteChar: "'" | '"' | '' = '';
+        let startIndex = -1;
+
+        for (let i = 0; i < valuesPart.length; i++) {
+            const char = valuesPart[i];
+            const lastChar = i > 0 ? valuesPart[i - 1] : '';
+
+            if (inString) {
+                if (char === quoteChar && lastChar !== '\\') {
+                    inString = false;
+                }
+            } else {
+                if (char === "'" || char === '"') {
+                    inString = true;
+                    quoteChar = char;
+                } else if (char === '(') {
+                    if (parenLevel === 0) {
+                        startIndex = i;
+                    }
+                    parenLevel++;
+                } else if (char === ')') {
+                    parenLevel--;
+                    if (parenLevel === 0 && startIndex !== -1) {
+                        values.push(valuesPart.substring(startIndex, i + 1));
+                        startIndex = -1;
+                    }
+                }
+            }
+        }
+        return values;
+    }
+
+    /**
      * Processes INSERT queries with multiple values into single INSERTs.
      * @param queries - An array of SQL queries.
      * @returns An array of processed SQL queries.
@@ -66,21 +108,29 @@ class SQLFileParser {
 
         for (const query of queries) {
             if (query.toUpperCase().startsWith("INSERT")) {
-                // Split the INSERT query into individual values
-                const [insertPart, valuesPart] = query.split("VALUES");
-                if (!valuesPart) {
-                    throw new Error(`Invalid INSERT query: ${query}`);
+
+                const valuesIndex = query.toUpperCase().indexOf("VALUES");
+                if (valuesIndex === -1) {
+                    // Not an INSERT ... VALUES query, e.g. INSERT ... SELECT
+                    processedQueries.push(query);
+                    continue;
                 }
 
-                // Extract the values in parentheses
-                const valuesMatch = valuesPart.match(/\(([^)]+)\)/g);
-                if (!valuesMatch) {
-                    throw new Error(`No values found in INSERT query: ${query}`);
+                const insertPart = query.substring(0, valuesIndex);
+                const valuesPart = query.substring(valuesIndex + "VALUES".length);
+
+                const valuesMatch = this.extractValues(valuesPart);
+
+                if (valuesMatch.length === 0) {
+                    // This can happen for INSERT ... SELECT, or malformed queries.
+                    // Push the original query and let the DB engine handle it.
+                    processedQueries.push(query);
+                    continue;
                 }
 
                 // For each value, create a separate INSERT query
                 for (const value of valuesMatch) {
-                    processedQueries.push(`${insertPart} VALUES ${value}`);
+                    processedQueries.push(`${insertPart.trim()} VALUES ${value}`);
                 }
             } else {
                 // If it's not an INSERT query, add it without changes

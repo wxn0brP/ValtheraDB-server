@@ -23,7 +23,7 @@
         "@wxn0brp/ac": "^0.0.3",
         "@wxn0brp/db": "^0.41.0",
         "@wxn0brp/db-core": "^0.3.0",
-        "@wxn0brp/db-string-query": "^0.0.11",
+        "@wxn0brp/db-string-query": "^0.0.12",
         "@wxn0brp/falcon-frame": "^0.5.3",
         "@wxn0brp/gate-warden": "^0.5.0",
         "@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",
