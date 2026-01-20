@@ -1,5 +1,6 @@
 import { AnotherCache } from "@wxn0brp/ac";
 import { Id } from "@wxn0brp/db";
+import { warden } from "../init/initDataBases";
 
 const PERM_CACHE_TTL = parseInt(process.env.PERM_CACHE_TTL) || 900; // 15 minutes
 export const cache = new AnotherCache<boolean>({
@@ -31,7 +32,7 @@ export async function checkPermission(user: Id, operation: string, dataCenter: s
         const key = `${user}_${r}_${dataCenter}`;
         if (cache.has(key)) return cache.get(key);
 
-        const perm = await global.warden.hasAccess(user, dataCenter, r);
+        const perm = await warden.hasAccess(user, dataCenter, r);
         cache.set(key, perm.granted);
 
         if (!perm.granted) return false;

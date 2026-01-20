@@ -2,10 +2,9 @@ node_modules
 yarn.lock
 package-lock.json
 
+
 dist
-data
-serverDB
-parsers
+volumes
 
 *.env
 .vscode

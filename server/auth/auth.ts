@@ -1,8 +1,9 @@
-import { checkUserAccess, generateToken, TokenTime } from "./helpers";
-import jwtManager from "../init/keys";
-import { RouteHandler } from "@wxn0brp/falcon-frame";
-import { Id } from "@wxn0brp/db";
 import { AnotherCache } from "@wxn0brp/ac";
+import { Id } from "@wxn0brp/db";
+import { RouteHandler } from "@wxn0brp/falcon-frame";
+import { internalDB } from "../init/initDataBases";
+import jwtManager from "../init/keys";
+import { checkUserAccess, generateToken, TokenTime } from "./helpers";
 
 const TOKEN_CACHE_TTL = parseInt(process.env.TOKEN_CACHE_TTL) || 900; // 15 minutes
 const cache = new AnotherCache<Id>({
@@ -12,11 +13,12 @@ const cache = new AnotherCache<Id>({
 
 export const authMiddleware: RouteHandler = async (req, res, next) => {
     let token = req.headers["authorization"];
-    if (!token) {
-        return res.status(401).json({ err: true, msg: "Access denied. No token provided." });
-    }
 
-    if (token.includes(" ")) token = token.split(" ")[1];
+    if (!token)
+        return res.status(401).json({ err: true, msg: "Access denied. No token provided." });
+
+    if (token.includes(" "))
+        token = token.split(" ")[1];
 
     if (cache.has(token)) {
         const u = cache.get(token);
@@ -26,20 +28,16 @@ export const authMiddleware: RouteHandler = async (req, res, next) => {
 
     try {
         const data = await jwtManager.decode(token) as { uid: Id; _id: Id };
-
-        if (!data || !data.uid || !data._id) {
+        if (!data || !data.uid || !data._id)
             return res.status(401).json({ err: true, msg: "Invalid token." });
-        }
 
-        const tokenD = await global.internalDB.findOne("token", { _id: data._id });
-        if (!tokenD) {
+        const tokenD = await internalDB.findOne("token", { _id: data._id });
+        if (!tokenD)
             return res.status(401).json({ err: true, msg: "Invalid token." });
-        }
 
-        const userD = await global.internalDB.findOne("user", { _id: data.uid });
-        if (!userD) {
+        const userD = await internalDB.findOne("user", { _id: data.uid });
+        if (!userD)
             return res.status(401).json({ err: true, msg: "Invalid token." });
-        }
 
         req.user = { _id: data.uid };
         cache.set(token, data.uid);

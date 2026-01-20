@@ -1,6 +1,7 @@
-import crypto from "crypto";
-import jwtManager from "../init/keys";
 import { genId } from "@wxn0brp/db";
+import crypto from "crypto";
+import { internalDB } from "../init/initDataBases";
+import jwtManager from "../init/keys";
 import { User } from "../types/user";
 
 function sha(str: string) {
@@ -14,18 +15,19 @@ export async function generateToken(payload: any, time: TokenTime = false) {
     if (!payload._id) payload._id = genId();
 
     const token = await jwtManager.create(payload, time);
-    const exists = await global.internalDB.findOne("token", { _id: payload._id });
-    if (!exists) await global.internalDB.add("token", { _id: payload._id, sha: sha(token) });
+    const exists = await internalDB.findOne("token", { _id: payload._id });
+
+    if (!exists) await internalDB.add("token", { _id: payload._id, sha: sha(token) });
 
     return token;
 }
 
 export async function removeToken(token: string) {
-    return await global.internalDB.removeOne("token", { token });
+    return await internalDB.removeOne("token", { token });
 }
 
 export async function checkUserAccess(login: string, password: string) {
-    const user = await global.internalDB.findOne<User>("user", { login });
+    const user = await internalDB.findOne<User>("user", { login });
     if (!user) return { err: true, msg: "Invalid login or password." };
 
     const hash = generateHash(password);

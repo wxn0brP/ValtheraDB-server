@@ -1,6 +1,7 @@
 import { Valthera } from "@wxn0brp/db";
 import { ValtheraDbParsers } from "@wxn0brp/db-string-query";
 import { ValtheraParser } from "@wxn0brp/db-string-query/types";
+import { dataCenter } from "../../init/initDataBases";
 
 export const ValtheraParsers: Record<string, ValtheraParser> = {};
 for (const [name, parser] of Object.entries(ValtheraDbParsers)) {
@@ -8,12 +9,8 @@ for (const [name, parser] of Object.entries(ValtheraDbParsers)) {
 }
 
 export function getDb(name: string) {
-    const dbData = global.dataCenter[name];
-    if (!dbData) return null;
-    return {
-        db: dbData.db as Valthera,
-        dir: dbData.dir
-    };
+    const dbData = dataCenter[name];
+    return dbData;
 }
 
 export function findMatchingString(query: string, options: string[]): string | null {

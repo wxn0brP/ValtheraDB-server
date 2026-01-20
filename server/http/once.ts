@@ -1,5 +1,6 @@
 import { Router } from "@wxn0brp/falcon-frame";
 import { authMiddleware, loginFunction } from "../auth/auth";
+import { dataCenter } from "../init/initDataBases";
 
 const onceRouter = new Router();
 
@@ -24,8 +25,8 @@ onceRouter.post("/login", async (req, res) => {
 });
 
 onceRouter.post("/getDbList", authMiddleware, async (req, res) => {
-    const dbsKeys = Object.keys(global.dataCenter);
-    const dbs = dbsKeys.map(dbName => ({ name: dbName, type: global.dataCenter[dbName].type }));
+    const dbsKeys = Object.keys(dataCenter);
+    const dbs = dbsKeys.map(dbName => ({ name: dbName, type: dataCenter[dbName].type }));
     res.json({ err: false, result: dbs });
 });
 

@@ -1,9 +1,10 @@
+import { Router } from "@wxn0brp/falcon-frame";
+import { runtime_dir } from "../init/vars";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
-import { getDb, ValtheraParsers } from "./query/utils";
-import sqlSplitter from "../utils/sqlFileImport";
 import { SQLFileCreator } from "../utils/sqlFileExport";
-import { Router } from "@wxn0brp/falcon-frame";
+import sqlSplitter from "../utils/sqlFileImport";
+import { getDb, ValtheraParsers } from "./query/utils";
 
 const router = new Router();
 
@@ -43,7 +44,7 @@ router.post("/import", async (req, res) => {
             }
 
             const collection = query.args[0];
-            if (collection && !isPathSafe(global.baseDir, dir, collection)) {
+            if (collection && !isPathSafe(runtime_dir, dir, collection)) {
                 return res.status(400).json({ err: true, msg: "Invalid collection: " + collection });
             }
         }
@@ -84,7 +85,7 @@ router.post("/export", async (req, res) => {
 
         if (collections.length > 0) {
             for (const collection of collections) {
-                if (!isPathSafe(global.baseDir, dir, collection)) {
+                if (!isPathSafe(runtime_dir, dir, collection)) {
                     return res.status(400).json({ err: true, msg: "Invalid collection: " + collection });
                 }
             }

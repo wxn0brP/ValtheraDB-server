@@ -1,8 +1,9 @@
-import { RouteHandler } from "@wxn0brp/falcon-frame";
 import { ValtheraDbParsers } from "@wxn0brp/db-string-query";
+import { RouteHandler } from "@wxn0brp/falcon-frame";
+import { runtime_dir } from "../../init/vars";
+import { isPathSafe } from "../../utils/path";
 import { checkPermission } from "../../utils/perm";
 import { getDb } from "./utils";
-import { isPathSafe } from "../../utils/path";
 
 export const sqlProxy: RouteHandler = async (req, res) => {
     if (!req.body.query) {
@@ -49,7 +50,7 @@ export const sqlProxy: RouteHandler = async (req, res) => {
         if (!collection) {
             return res.status(400).json({ err: true, msg: "collection is required" });
         }
-        if (!isPathSafe(global.baseDir, dir, collection)) {
+        if (!isPathSafe(runtime_dir, dir, collection)) {
             return res.status(400).json({ err: true, msg: "invalid collection" });
         }
 

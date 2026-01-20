@@ -1,22 +1,9 @@
-import { Graph, Valthera } from "@wxn0brp/db";
+import { Valthera } from "@wxn0brp/db";
 import { GateWarden } from "@wxn0brp/gate-warden";
-
-declare global {
-    var baseDir: string;
-    var internalDB: Valthera;
-    var dataCenter: {
-        [key: string]:
-        (
-            { type: "database", db: Valthera } |
-            { type: "graph", db: Graph }
-        ) & { dir: string }
-    };
-    var warden: GateWarden;
-}
 
 declare module "@wxn0brp/falcon-frame" {
     interface FFRequest {
-        dataCenter: Valthera | Graph;
+        dataCenter: Valthera;
         dbDir: string;
         user: { _id: string };
     }

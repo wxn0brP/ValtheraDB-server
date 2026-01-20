@@ -2,14 +2,14 @@ import { UserManager, WardenManager } from "@wxn0brp/gate-warden";
 import JSON5 from "json5";
 import { cliMeta } from "./wardenMeta";
 import { Valthera } from "@wxn0brp/db";
+import { internal_db_dir } from "../server/init/vars";
 
 const classes = {
     user: UserManager,
     mgr: WardenManager
 };
 
-const dbPath = process.env.INTERNAL_VDB || "./serverDB";
-const db = new Valthera(dbPath);
+const db = new Valthera(internal_db_dir);
 
 const classesConstructors = {
     user: [db],

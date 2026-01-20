@@ -1,7 +1,8 @@
+import { ValtheraQuery } from "@wxn0brp/db-string-query/types";
+import { Router } from "@wxn0brp/falcon-frame";
+import { runtime_dir } from "../../init/vars";
 import { isPathSafe } from "../../utils/path";
 import { checkPermission } from "../../utils/perm";
-import { Router } from "@wxn0brp/falcon-frame";
-import { ValtheraQuery } from "@wxn0brp/db-string-query/types";
 import { sqlProxy } from "./sql";
 import { getDb, getParser } from "./utils";
 const router = new Router();
@@ -65,7 +66,7 @@ router.post("/:parserType", async (req, res) => {
         if (!collection) {
             return res.status(400).json({ err: true, msg: "collection is required" });
         }
-        if (!isPathSafe(global.baseDir, dir, collection)) {
+        if (!isPathSafe(runtime_dir, dir, collection)) {
             return res.status(400).json({ err: true, msg: "invalid collection" });
         }
 

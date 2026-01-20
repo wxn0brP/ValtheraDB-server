@@ -15,3 +15,4 @@ This documentation provides instructions on how to use the server API.
 - [Querying](./query.md)
 - [Relations](./relations.md)
 - [SQL Import/Export](./sql.md)
+- [Environment Variables](./env.md)

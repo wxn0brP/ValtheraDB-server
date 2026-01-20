@@ -3,6 +3,7 @@ import { parseCSV } from "../utils/csvParser";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
 import { getDb } from "./query/utils";
+import { runtime_dir } from "../init/vars";
 
 const router = new Router();
 
@@ -34,7 +35,7 @@ router.post("/import", async (req, res) => {
             return res.status(403).json({ err: true, msg: "Access denied for query type: " + type });
         }
 
-        if (collection && !isPathSafe(global.baseDir, dir, collection)) {
+        if (collection && !isPathSafe(runtime_dir, dir, collection)) {
             return res.status(400).json({ err: true, msg: "Invalid collection: " + collection });
         }
 
@@ -70,7 +71,7 @@ router.post("/export", async (req, res) => {
     try {
         if (!await checkPermission(req.user._id, "find", dbName)) return res.status(403).json({ err: true, msg: "Access denied for query type: find" });
 
-        if (collection && !isPathSafe(global.baseDir, dir, collection)) {
+        if (collection && !isPathSafe(runtime_dir, dir, collection)) {
             return res.status(400).json({ err: true, msg: "Invalid collection: " + collection });
         }
 

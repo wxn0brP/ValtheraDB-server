@@ -1,7 +1,9 @@
-import { checkPermission } from "../../utils/perm";
-import { isPathSafe } from "../../utils/path";
 import { FFResponse } from "@wxn0brp/falcon-frame";
 import { deserializeFunctions } from "@wxn0brp/wts-run-fn";
+import { dataCenter } from "../../init/initDataBases";
+import { runtime_dir } from "../../init/vars";
+import { isPathSafe } from "../../utils/path";
+import { checkPermission } from "../../utils/perm";
 
 export interface Query {
     type: string;
@@ -63,7 +65,7 @@ export async function dbLogic(query: Query): Promise<Response> {
     } = query;
     const res = new Response();
 
-    const dbObj = global.dataCenter[dbName];
+    const dbObj = dataCenter[dbName];
     if (!dbObj) return res.e(Codes.INVALID_DB);
     if (!type) return res.e(Codes.TYPE_REQ);
 
@@ -85,7 +87,7 @@ export async function dbLogic(query: Query): Promise<Response> {
         const collection = params.shift() as string;
         if (!collection) return res.e(Codes.COLLECTION_REQ);
 
-        if (!isPathSafe(global.baseDir, dbDir, collection)) return res.e(Codes.INVALID_COLLECTION);
+        if (!isPathSafe(runtime_dir, dbDir, collection)) return res.e(Codes.INVALID_COLLECTION);
 
         const result = await db[type](collection, ...parsedParams as any[]);
         console.log(result);

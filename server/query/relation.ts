@@ -1,8 +1,10 @@
 import { Id, Relation, RelationTypes, Valthera, ValtheraCompatible } from "@wxn0brp/db";
 import { Remote, ValtheraRemote } from "@wxn0brp/db-client";
 import { Router } from "@wxn0brp/falcon-frame";
+import { dataCenter } from "../init/initDataBases";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
+import { runtime_dir } from "../init/vars";
 
 const router = new Router();
 
@@ -16,11 +18,11 @@ async function createRelation(accessCfg: AccessCfg, userId: Id, res: any): Promi
     for (const key in accessCfg) {
         const remote = accessCfg[key];
         if (typeof remote === "string") {
-            if (!global.dataCenter[remote]) {
+            if (!dataCenter[remote]) {
                 res.status(400).json({ err: true, msg: `remote ${remote} not found` });
                 return false;
             }
-            dbs[key] = global.dataCenter[remote].db as Valthera;
+            dbs[key] = dataCenter[remote].db as Valthera;
             if (!await checkPermission(userId, "find", remote)) {
                 res.status(403).json({ err: true, msg: `access denied to ${remote}` });
                 return false;
@@ -42,7 +44,7 @@ function checkCollections(
     for (const cfg of Object.values(relation)) {
         const [db, collection] = cfg.path;
         const isRemote = typeof accessCfg[db] !== "string";
-        
+
         if (!isRemote && !isPathSafe(baseDir, db, collection)) {
             return cfg.path;
         }
@@ -79,13 +81,13 @@ router.post('/:type', async (req, res) => {
             return res.status(400).json({ err: true, msg: "params is required" });
 
         const collection = params.shift() as string[];
-        if (!collection || collection.length !== 2) 
+        if (!collection || collection.length !== 2)
             return res.status(400).json({ err: true, msg: "collection is required" });
-        
-        if (!isPathSafe(global.baseDir, "", collection[1])) 
+
+        if (!isPathSafe(runtime_dir, "", collection[1]))
             return res.status(400).json({ err: true, msg: "invalid collection" });
 
-        const check = checkCollections(global.baseDir, req.body.accessCfg, params[1] as any);
+        const check = checkCollections(runtime_dir, req.body.accessCfg, params[1] as any);
         if (typeof check === "object") {
             return res.status(400).json({ err: true, msg: "invalid accessCfg collection " + JSON.stringify(check) });
         }

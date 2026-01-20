@@ -1,10 +1,10 @@
 import { configDotenv } from "dotenv";
 import { initKeys } from "./init/keys";
+import { runtime_dir } from "./init/vars";
 
 configDotenv({ quiet: true });
 await import("./init/initDataBases");
-global.baseDir = process.env.BASE_DIR || process.cwd();
 await initKeys();
 
-console.log("baseDir", global.baseDir);
+console.log("Runtime dir:", runtime_dir);
 await import("./http");
