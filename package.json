@@ -21,10 +21,10 @@
     "type": "module",
     "dependencies": {
         "@wxn0brp/ac": "^0.0.3",
-        "@wxn0brp/db": "^0.41.0",
-        "@wxn0brp/db-core": "^0.3.0",
+        "@wxn0brp/db": "^0.41.1",
+        "@wxn0brp/db-core": "^0.4.0",
         "@wxn0brp/db-string-query": "^0.0.12",
-        "@wxn0brp/falcon-frame": "^0.5.4",
+        "@wxn0brp/falcon-frame": "^0.5.9",
         "@wxn0brp/gate-warden": "^0.5.1",
         "@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",
         "@wxn0brp/wts-run-fn": "github:wxn0brp/ts-shared#dist-run-fn",
