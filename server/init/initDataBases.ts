@@ -13,7 +13,11 @@ export const warden = new GateWarden(internalDB);
 async function loadDataBases() {
     const databases = await internalDB.find<DataBaseBuilder>("dbs", {});
     for (const db of databases) {
-        const dir = db.folder.startsWith(".") ? db.folder : join(db_base_dir, "data", db.folder);
+        db.folder ||= db.name;
+
+        const dir = db.folder.startsWith(".") ?
+            db.folder :
+            join(db_base_dir, "data", db.folder);
 
         dataCenter[db.name] = {
             db: new Valthera(dir, db.opts || {},),
