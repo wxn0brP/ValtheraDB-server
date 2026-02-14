@@ -31,11 +31,11 @@ export const authMiddleware: RouteHandler = async (req, res, next) => {
         if (!data || !data.uid || !data._id)
             return res.status(401).json({ err: true, msg: "Invalid token." });
 
-        const tokenD = await internalDB.findOne("token", { _id: data._id });
+        const tokenD = await internalDB.token.findOne({ _id: data._id });
         if (!tokenD)
             return res.status(401).json({ err: true, msg: "Invalid token." });
 
-        const userD = await internalDB.findOne("user", { _id: data.uid });
+        const userD = await internalDB.user.findOne({ _id: data.uid });
         if (!userD)
             return res.status(401).json({ err: true, msg: "Invalid token." });
 

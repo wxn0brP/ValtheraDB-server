@@ -1,4 +1,3 @@
-import { Valthera } from "@wxn0brp/db";
 import { ValtheraDbParsers } from "@wxn0brp/db-string-query";
 import { ValtheraParser } from "@wxn0brp/db-string-query/types";
 import { dataCenter } from "../../init/initDataBases";

@@ -1,5 +1,4 @@
-import { Valthera } from "@wxn0brp/db";
-import { GateWarden } from "@wxn0brp/gate-warden";
+import { Valthera } from "@wxn0brp/db/valthera";
 
 declare module "@wxn0brp/falcon-frame" {
     interface FFRequest {

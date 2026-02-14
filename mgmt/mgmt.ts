@@ -7,12 +7,12 @@ export async function addUserAccess(login: string, password: string) {
     if (login.length < 3 || login.length > 10) return { err: true, msg: "Login must be between 3 and 10 characters." };
     if (password.length < 8 || password.length > 300) return { err: true, msg: "Password must be between 8 and 300 characters." };
 
-    const userExists = await internalDB.findOne("user", { login });
+    const userExists = await internalDB.user.findOne({ login });
     if (userExists) return { err: true, msg: "Login already exists." };
 
     password = generateHash(password);
 
-    const user = await internalDB.add("user", {
+    const user = await internalDB.user.add({
         login,
         password
     });
@@ -22,9 +22,9 @@ export async function addUserAccess(login: string, password: string) {
 }
 
 export async function removeUser(idOrLogin: string) {
-    const userId = await internalDB.findOne<{ _id: string }>("user", { $or: [{ _id: idOrLogin }, { login: idOrLogin }] });
+    const userId = await internalDB.user.findOne({ $or: [{ _id: idOrLogin }, { login: idOrLogin }] });
     if (!userId) return false;
-    await internalDB.removeOne("user", { _id: userId._id });
+    await internalDB.user.removeOne({ _id: userId._id });
     const userMgmt = new UserManager(internalDB);
     await userMgmt.deleteUser(userId._id);
     return true;

@@ -1,4 +1,4 @@
-import { Valthera } from "@wxn0brp/db";
+import { Valthera } from "@wxn0brp/db/valthera";
 import { Command } from "commander";
 import { configDotenv } from "dotenv";
 import fs from "fs";
@@ -27,13 +27,13 @@ Parameters:
     .action(async (name, folder, opts) => {
         const options = opts ? JSON.parse(opts) : {};
 
-        const dbExists = await internalDB.findOne("dbs", { name });
+        const dbExists = await internalDB.dbs.findOne({ name });
         if (dbExists) {
             console.log("Database already exists");
             process.exit(1);
         }
 
-        await internalDB.add("dbs", {
+        await internalDB.dbs.add({
             name,
             folder: folder || name,
             opts: options,
@@ -48,7 +48,7 @@ program
     .alias("remove-db")
     .description("Remove a database")
     .action(async (name) => {
-        const res = await internalDB.removeOne("dbs", { name });
+        const res = await internalDB.dbs.removeOne({ name });
         console.log(res ? "Done" : "Database not found");
         process.exit(0);
     });
@@ -57,7 +57,7 @@ program
     .command("list-dbs")
     .description("List all databases")
     .action(async () => {
-        const dbs = await internalDB.find("dbs", {});
+        const dbs = await internalDB.dbs.find({});
         console.log(dbs);
         process.exit(0);
     });
@@ -88,7 +88,7 @@ program
     .alias("lu")
     .description("List all users")
     .action(async () => {
-        const users = await internalDB.find("user", {});
+        const users = await internalDB.user.find();
         const simplifiedUsers = users.map(u => ({
             login: u.login,
             _id: u._id
@@ -102,11 +102,14 @@ program
     .alias("gt")
     .description("Get a token for a user")
     .action(async (user_id_or_login, time, match_chars) => {
-        const user = await internalDB.findOne<{ _id: string }>("user", {
-            $or: [
-                { login: user_id_or_login },
-                { _id: user_id_or_login }
-            ]
+        const user = await internalDB.findOne<{ _id: string }>({
+            collection: "user",
+            search: {
+                $or: [
+                    { login: user_id_or_login },
+                    { _id: user_id_or_login }
+                ]
+            }
         });
 
         if (!user) {

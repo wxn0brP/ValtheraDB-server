@@ -20,16 +20,16 @@
     "license": "MIT",
     "type": "module",
     "dependencies": {
-        "@wxn0brp/ac": "^0.0.3",
-        "@wxn0brp/db": "^0.42.0",
-        "@wxn0brp/db-core": "^0.4.0",
-        "@wxn0brp/db-string-query": "^0.0.12",
-        "@wxn0brp/falcon-frame": "^0.5.9",
-        "@wxn0brp/gate-warden": "^0.5.3",
+        "@wxn0brp/ac": "~0.0.3",
+        "@wxn0brp/db": "~0.60.0",
+        "@wxn0brp/db-core": "~0.6.1",
+        "@wxn0brp/db-string-query": "~0.0.13",
+        "@wxn0brp/falcon-frame": "~0.7.0",
+        "@wxn0brp/gate-warden": "~0.5.3",
         "@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",
         "@wxn0brp/wts-run-fn": "github:wxn0brp/ts-shared#dist-run-fn",
-        "commander": "^14.0.2",
-        "dotenv": "^17.2.3"
+        "commander": "^14.0.3",
+        "dotenv": "^17.3.1"
     },
     "devDependencies": {
         "@types/node": "*",

@@ -1,4 +1,4 @@
-import { Valthera } from "@wxn0brp/db";
+import { Valthera } from "@wxn0brp/db/valthera";
 
 export interface Opts {
     dropIfExist: boolean,
@@ -108,15 +108,15 @@ export class SQLFileCreator {
         return sql;
     }
 
-    async processCollection(collectionName: string) {
-        const data = await this.db.find(collectionName, {});
+    async processCollection(collection: string) {
+        const data = await this.db.find({ collection });
         const keys = getCollectionStruct(data);
 
         let createIfNotExist = null;
         if (this.opts.createIfNotExist) {
             const construct = Array.from(keys).map(([k, v]) => `${k} ${v}`).join(", ");
             if (construct.trim().length > 0) {
-                createIfNotExist = `CREATE TABLE IF NOT EXISTS ${collectionName} (${construct});`
+                createIfNotExist = `CREATE TABLE IF NOT EXISTS ${collection} (${construct});`
             }
         }
 
@@ -125,11 +125,11 @@ export class SQLFileCreator {
         let insert = null;
 
         if (data.length > 0) {
-            insert = `INSERT INTO ${collectionName} (${order.join(", ")}) VALUES `;
+            insert = `INSERT INTO ${collection} (${order.join(", ")}) VALUES `;
             insert += enter;
-            insert += 
+            insert +=
                 data.map(d => "(" + processDataToOrder(d, order) + ")")
-                .join(", " + enter)
+                    .join(", " + enter)
             insert += `;` + enter;
         }
 

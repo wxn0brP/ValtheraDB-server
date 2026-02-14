@@ -1,10 +1,11 @@
-import { Id, Relation, RelationTypes, Valthera, ValtheraCompatible } from "@wxn0brp/db";
+import { Id, Relation, RelationTypes, ValtheraCompatible } from "@wxn0brp/db";
 import { Remote, ValtheraRemote } from "@wxn0brp/db-client";
+import { Valthera } from "@wxn0brp/db/valthera";
 import { Router } from "@wxn0brp/falcon-frame";
 import { dataCenter } from "../init/initDataBases";
+import { runtime_dir } from "../init/vars";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
-import { runtime_dir } from "../init/vars";
 
 const router = new Router();
 
