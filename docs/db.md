@@ -21,7 +21,13 @@ fetch('http://localhost:14785/db/add', {
   },
   body: JSON.stringify({
     db: 'mainDB',
-    params: ['users', { name: 'John Doe', age: 30 }]
+    params: [{
+      collection: 'users',
+      data: { 
+        name: 'John Doe',
+        age: 30
+      }
+    }]
   })
 });
 ```
