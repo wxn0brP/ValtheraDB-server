@@ -6,13 +6,12 @@ import { checkPermission } from "../../utils/perm";
 import { getDb } from "./utils";
 
 export const sqlProxy: RouteHandler = async (req, res) => {
-    if (!req.body.query) {
+    if (!req.body.query)
         return res.status(400).json({ err: true, msg: "query is required" });
-    }
 
-    if (!req.body.db) {
+    if (!req.body.db)
         return res.status(400).json({ err: true, msg: "db is required" });
-    }
+
 
     const parser = new ValtheraDbParsers.sql();
 
@@ -41,20 +40,19 @@ export const sqlProxy: RouteHandler = async (req, res) => {
         //     }
         // }
 
-        if (!query.args || query.args.length === 0) {
+        if (!query.query || typeof query.query !== "object") {
             return res.status(400).json({ err: true, msg: "args is required" });
         }
 
-        const collection = query.args.shift();
+        const collection = query.query.collection;
 
-        if (!collection) {
+        if (!collection)
             return res.status(400).json({ err: true, msg: "collection is required" });
-        }
-        if (!isPathSafe(runtime_dir, dir, collection)) {
-            return res.status(400).json({ err: true, msg: "invalid collection" });
-        }
 
-        const result = await db[type](collection, ...query.args as any[]);
+        if (!isPathSafe(runtime_dir, dir, collection))
+            return res.status(400).json({ err: true, msg: "invalid collection" });
+
+        const result = await db[type](query);
 
         if (type === "find" || type === "findOne") {
             const data = Array.isArray(result) ? result : [result];

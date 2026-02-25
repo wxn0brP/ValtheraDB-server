@@ -41,7 +41,7 @@ router.post("/import", async (req, res) => {
 
         const results = []
         for (const row of parsed) {
-            const result = await db.add(collection, row);
+            const result = await db.add({ collection, data: row });
             results.push(result);
         }
 
@@ -75,7 +75,7 @@ router.post("/export", async (req, res) => {
             return res.status(400).json({ err: true, msg: "Invalid collection: " + collection });
         }
 
-        const data = await db.find(collection);
+        const data = await db.find({ collection, search: {} });
         const keys = Object.keys(Object.assign({}, ...data));
         const rows = data.map((item) =>
             keys.map((key) => {

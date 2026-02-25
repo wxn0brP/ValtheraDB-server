@@ -14,20 +14,17 @@ router.post("/:parserType", async (req, res) => {
     const q = req.body.q;
     const parserType = req.params.parserType;
 
-    if (!dbName || !q) {
+    if (!dbName || !q)
         return res.status(400).json({ err: true, msg: "db and q are required" });
-    }
 
     const parser = getParser(parserType);
 
-    if (!parser) {
+    if (!parser)
         return res.status(400).json({ err: true, msg: "Invalid parser type." });
-    }
 
     const dbGet = getDb(dbName);
-    if (!dbGet) {
+    if (!dbGet)
         return res.status(400).json({ err: true, msg: "Invalid data center." });
-    }
 
     const { db, dir } = dbGet;
 
@@ -49,28 +46,24 @@ router.post("/:parserType", async (req, res) => {
             return res.json({ err: false, result: collections });
         }
 
-        if (!db[type] || typeof db[type] !== "function") {
+        if (!db[type] || typeof db[type] !== "function")
             return res.status(400).json({ err: true, msg: "invalid type" });
-        }
 
-        if (!await checkPermission(req.user._id, type, dbName)) {
+        if (!await checkPermission(req.user._id, type, dbName))
             return res.status(403).json({ err: true, msg: "access denied" });
-        }
 
-        if (!query.args || query.args.length === 0) {
+        if (!query.query || typeof query.query !== "object")
             return res.status(400).json({ err: true, msg: "args is required" });
-        }
 
-        const collection = query.args.shift();
+        const collection = query.query.collection;
 
-        if (!collection) {
+        if (!collection)
             return res.status(400).json({ err: true, msg: "collection is required" });
-        }
-        if (!isPathSafe(runtime_dir, dir, collection)) {
-            return res.status(400).json({ err: true, msg: "invalid collection" });
-        }
 
-        const result = await db[type](collection, ...query.args as any[]);
+        if (!isPathSafe(runtime_dir, dir, collection))
+            return res.status(400).json({ err: true, msg: "invalid collection" });
+
+        const result = await db[type](query.query);
         return res.json({ err: false, result });
     } catch (err) {
         console.error(err);

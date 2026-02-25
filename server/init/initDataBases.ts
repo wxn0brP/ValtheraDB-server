@@ -21,7 +21,7 @@ export const internalDB = ValtheraCreate<{
     token: Token
 }>(internal_db_dir);
 
-export const dataCenter = {};
+export const dataCenter: Record<string, { db: Valthera, dir: string }> = {};
 export const warden = new GateWarden(internalDB);
 
 async function loadDataBases() {

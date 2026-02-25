@@ -43,7 +43,7 @@ router.post("/import", async (req, res) => {
                 return res.status(403).json({ err: true, msg: "Access denied for query type: " + type });
             }
 
-            const collection = query.args[0];
+            const collection = query.query.collection;
             if (collection && !isPathSafe(runtime_dir, dir, collection)) {
                 return res.status(400).json({ err: true, msg: "Invalid collection: " + collection });
             }
@@ -51,8 +51,7 @@ router.post("/import", async (req, res) => {
 
         const results = [];
         for (const query of queries) {
-            const collection = query.args.shift();
-            const result = await db[query.method](collection, ...query.args as any[]);
+            const result = await db[query.method](query.query);
             results.push(result);
         }
 

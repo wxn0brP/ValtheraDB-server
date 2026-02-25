@@ -8,8 +8,7 @@ for (const [name, parser] of Object.entries(ValtheraDbParsers)) {
 }
 
 export function getDb(name: string) {
-    const dbData = dataCenter[name];
-    return dbData;
+    return dataCenter[name];
 }
 
 export function findMatchingString(query: string, options: string[]): string | null {

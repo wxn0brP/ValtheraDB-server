@@ -26,8 +26,7 @@ onceRouter.post("/login", async (req, res) => {
 
 onceRouter.post("/getDbList", authMiddleware, async (req, res) => {
     const dbsKeys = Object.keys(dataCenter);
-    const dbs = dbsKeys.map(dbName => ({ name: dbName, type: dataCenter[dbName].type }));
-    res.json({ err: false, result: dbs });
+    res.json({ err: false, result: dbsKeys });
 });
 
 onceRouter.post("/auth-check", authMiddleware, (req, res) => {
