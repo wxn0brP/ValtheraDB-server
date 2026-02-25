@@ -8,7 +8,7 @@ router.post("/:type", async (req, res) => {
         type: req.params.type,
         dbName: req.body.db,
         userId: req.user._id,
-        params: req.body.params,
+        query: req.body.params[0],
         keys: req.body.keys || []
     });
 
@@ -17,12 +17,16 @@ router.post("/:type", async (req, res) => {
 
 router.post("/:db/:type", async (req, res) => {
     const collection = req.query?.c || "";
+    const params = req.body?.params || {};
 
     const result = await dbLogic({
         type: req.params.type,
         dbName: req.params.db,
         userId: req.user._id,
-        params: [collection, ...(req.body?.params || [])],
+        query: {
+            collection,
+            ...params
+        },
         keys: req.body.keys || []
     });
 

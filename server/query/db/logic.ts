@@ -4,6 +4,7 @@ import { dataCenter } from "../../init/initDataBases";
 import { runtime_dir } from "../../init/vars";
 import { isPathSafe } from "../../utils/path";
 import { checkPermission } from "../../utils/perm";
+import { VQuery } from "@wxn0brp/db-core/types/query";
 
 export interface Query {
     type: string;
@@ -11,7 +12,7 @@ export interface Query {
     dbName: string;
     // dbDir: string;
     userId: string;
-    params: (Object | string)[];
+    query: VQuery;
     keys: string[];
 }
 
@@ -60,7 +61,7 @@ export async function dbLogic(query: Query): Promise<Response> {
         type,
         dbName,
         userId,
-        params,
+        query: params,
         keys
     } = query;
     const res = new Response();
@@ -80,17 +81,17 @@ export async function dbLogic(query: Query): Promise<Response> {
 
         if (!await checkPermission(userId, type, dbName)) return res.e(Codes.ACCESS_DENIED, 403);
 
-        if (!params || params.length === 0) return res.e(Codes.PARAMS_REQ);
+        if (!params || typeof params !== "object" || !params.collection) return res.e(Codes.PARAMS_REQ);
 
-        const parsedParams = deserializeFunctions(params, keys || []);
+        const parsedParams = deserializeFunctions([params], keys || []);
+        const parsedVQuery = parsedParams[0] as VQuery;
 
-        const collection = params.shift() as string;
+        const collection = parsedVQuery.collection as string;
         if (!collection) return res.e(Codes.COLLECTION_REQ);
 
         if (!isPathSafe(runtime_dir, dbDir, collection)) return res.e(Codes.INVALID_COLLECTION);
 
-        const result = await db[type](collection, ...parsedParams as any[]);
-        console.log(result);
+        const result = await db[type](parsedVQuery);
 
         return res.r(result);
     } catch (err) {
