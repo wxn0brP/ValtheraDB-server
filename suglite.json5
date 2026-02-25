@@ -1,9 +1,9 @@
 {
+    cmd: "bun run bun",
     watch: [
         "server",
         "serverMgmt",
     ],
-    cmd: "yarn bun",
     restart_cmd: "clear",
     events: {
         rs: "clear",
