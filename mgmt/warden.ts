@@ -23,7 +23,8 @@ if (!className || !methodName) {
     console.log("Available:");
     for (const [key, cls] of Object.entries(classes)) {
         const methods = Object.getOwnPropertyNames(cls.prototype).filter(m => m !== "constructor");
-        console.log(`  ${key}: ${methods.join(", ")}`);
+        const body = methods.join("\n  ");
+        console.log(` ${key}:\n  ${body}`);
     }
     process.exit(1);
 }
