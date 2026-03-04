@@ -1,0 +1,46 @@
+{
+  "name": "@wxn0brp/db-server",
+  "version": "0.0.1",
+  "main": "dist/server/index.js",
+  "description": "ValtheraDB server",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wxn0brP/ValtheraDB-server.git"
+  },
+  "homepage": "https://github.com/wxn0brP/ValtheraDB-server",
+  "keywords": [
+    "database",
+    "file-based",
+    "CRUD",
+    "graph",
+    "query",
+    "server"
+  ],
+  "author": "wxn0brP",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@wxn0brp/ac": "~0.0.3",
+    "@wxn0brp/db": "~0.90.1",
+    "@wxn0brp/db-core": "~0.9.0",
+    "@wxn0brp/db-storage-dir": "~0.90.0",
+    "@wxn0brp/db-string-query": "~0.90.0",
+    "@wxn0brp/falcon-frame": "~0.7.0",
+    "@wxn0brp/gate-warden": "~0.6.0",
+    "@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",
+    "@wxn0brp/wts-run-fn": "github:wxn0brp/ts-shared#dist-run-fn",
+    "commander": "^14.0.3",
+    "dotenv": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "*",
+    "tsc-alias": "*",
+    "typescript": "*"
+  },
+  "scripts": {
+    "start": "node ./dist/server/index.js",
+    "server": "node ./dist/server/index.js",
+    "mgmt": "node ./dist/mgmt/index.js",
+    "right": "node ./dist/mgmt/warden.js"
+  }
+}
