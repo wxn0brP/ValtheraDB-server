@@ -6,7 +6,8 @@
         "outDir": "./dist",
         "esModuleInterop": true,
         "allowArbitraryExtensions": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "strict": false
     },
     "include": [
         "server",
