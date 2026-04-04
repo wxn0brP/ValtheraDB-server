@@ -1,6 +1,6 @@
 import FalconFrame from "@wxn0brp/falcon-frame";
-import apiRouter from "./db";
-import onceRouter from "./once";
+import { apiRouter } from "./db";
+import { onceRouter } from "./once";
 
 const app = new FalconFrame();
 app.setOrigin("*");

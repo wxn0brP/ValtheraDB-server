@@ -2,7 +2,7 @@ import { Router } from "@wxn0brp/falcon-frame";
 import { authMiddleware, loginFunction } from "../auth/auth";
 import { dataCenter } from "../init/initDataBases";
 
-const onceRouter = new Router();
+export const onceRouter = new Router();
 
 onceRouter.post("/login", async (req, res) => {
     const { login, password, time } = req.body;
@@ -32,5 +32,3 @@ onceRouter.post("/getDbList", authMiddleware, async (req, res) => {
 onceRouter.post("/auth-check", authMiddleware, (req, res) => {
     res.json({ err: false });
 });
-
-export default onceRouter;

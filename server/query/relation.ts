@@ -7,7 +7,7 @@ import { runtime_dir } from "../init/vars";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
 
-const router = new Router();
+export const relationRouter = new Router();
 
 interface AccessCfg {
     [key: string]: Remote | string;
@@ -23,7 +23,9 @@ async function createRelation(accessCfg: AccessCfg, userId: Id, res: any): Promi
                 res.status(400).json({ err: true, msg: `remote ${remote} not found` });
                 return false;
             }
+
             dbs[key] = dataCenter[remote].db as Valthera;
+
             if (!await checkPermission(userId, "find", remote)) {
                 res.status(403).json({ err: true, msg: `access denied to ${remote}` });
                 return false;
@@ -46,36 +48,30 @@ function checkCollections(
         const [db, collection] = cfg.path;
         const isRemote = typeof accessCfg[db] !== "string";
 
-        if (!isRemote && !isPathSafe(baseDir, db, collection)) {
+        if (!isRemote && !isPathSafe(baseDir, db, collection))
             return cfg.path;
-        }
 
         if (cfg.relations) {
             const res = checkCollections(baseDir, accessCfg, cfg.relations);
             return res === true ? true : res;
         }
+
     }
     return true;
 }
 
-router.post('/:type', async (req, res) => {
+relationRouter.post("/:type", async (req, res) => {
     const { type } = req.params as { type: string };
 
-    if (!type) {
-        return res.status(400).json({ err: true, msg: "type is required" });
-    }
-
-    if (!req.body.accessCfg) {
+    if (!req.body.accessCfg)
         return res.status(400).json({ err: true, msg: "accessCfg is required" });
-    }
 
     try {
         const relation = await createRelation(req.body.accessCfg, req.user._id, res);
         if (!relation) return;
 
-        if (!relation[type] || typeof relation[type] !== "function") {
+        if (!relation[type] || typeof relation[type] !== "function")
             return res.status(400).json({ err: true, msg: "invalid type" });
-        }
 
         const params = req.body.params as (Object | string)[];
         if (!params || params.length <= 2)
@@ -89,9 +85,8 @@ router.post('/:type', async (req, res) => {
             return res.status(400).json({ err: true, msg: "invalid collection" });
 
         const check = checkCollections(runtime_dir, req.body.accessCfg, params[1] as any);
-        if (typeof check === "object") {
+        if (typeof check === "object")
             return res.status(400).json({ err: true, msg: "invalid accessCfg collection " + JSON.stringify(check) });
-        }
 
         const result = await relation[type](collection, ...params as any[]);
 
@@ -101,5 +96,3 @@ router.post('/:type', async (req, res) => {
         res.status(500).json({ err: true, msg: err.message });
     }
 });
-
-export default router;
