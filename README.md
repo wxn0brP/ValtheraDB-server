@@ -9,7 +9,17 @@ For more details, visit [this link](https://github.com/wxn0brP/ValtheraDB).
 - Simple configuration with a `.env` file.
 - Management and server control commands included.
 
-## Installation
+## Installation 
+
+### Docker (recommended)
+
+Build and run with Docker Compose:
+
+```bash
+docker compose up -d --build
+```
+
+### Manual Installation
 
 1. Clone the repository:
 
@@ -21,16 +31,22 @@ cd ValtheraDB-server
 2. Install dependencies:
 
 ```bash
-yarn
+npm install
 ```
 
 3. Build the project:
 
 ```bash
-yarn build
+npm run build
 ```
 
-## First Configuration
+4. Run the server: 
+
+```bash
+npm start
+```
+
+#### First Configuration
 
 Copy the example `.env` file to create your configuration file:
 
@@ -47,21 +63,13 @@ Edit the `.env` file to suit your environment and requirements.
 Use the management command to configure or control the server:
 
 ```bash
-yarn mgmt
+npm run mgmt #<args>
 ```
 
 And to run the right management command:
 
 ```bash
-yarn right
-```
-
-### Run Server
-
-Start the database server with the following command:
-
-```bash
-yarn start
+npm run right #<args>
 ```
 
 ## Contributing
