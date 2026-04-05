@@ -72,6 +72,8 @@ And to run the right management command:
 npm run right #<args>
 ```
 
+### Management Tutorial [here](./docs/mgmt.md)
+
 ## Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests on the [GitHub repository](https://github.com/wxn0brP/ValtheraDB-server).

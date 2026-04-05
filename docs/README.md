@@ -8,6 +8,10 @@ This documentation provides instructions on how to use the server API.
 - **Data Format:** All requests and responses are in `JSON` format.
 - **Authentication:** Most endpoints require an authentication token. The token should be sent in the `Authorization` header as `Bearer <token>`.
 
+## Tutorials
+
+- [Management CLI (mgmt & right)](./mgmt.md)
+
 ## API Sections
 
 - [Authentication](./auth.md)
