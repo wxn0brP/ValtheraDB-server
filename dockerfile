@@ -7,5 +7,7 @@ RUN npm i
 COPY dist ./dist
 COPY gui ./gui
 
+VOLUME ["/app/volumes"]
+
 EXPOSE 14785
 CMD ["npm", "start"]

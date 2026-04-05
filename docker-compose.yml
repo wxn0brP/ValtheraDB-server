@@ -1,0 +1,11 @@
+services:
+  valtheradb:
+    build: .
+    image: valtheradb-server
+    container_name: valtheradb
+    ports:
+      - "14785:14785"
+    env_file:
+      - .env
+    volumes:
+      - ./volumes:/app/volumes
