@@ -1,10 +1,11 @@
 FROM oven/bun:latest
-RUN apk add --no-cache git
+RUN apt update && apt install -y git
 WORKDIR /app
 
 COPY package.json ./
 RUN bun i
-COPY dist ./dist
+COPY mgmt ./mgmt
+COPY server ./server
 COPY gui ./gui
 
 VOLUME ["/app/volumes"]
