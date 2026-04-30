@@ -23,7 +23,7 @@
         "@wxn0brp/ac": "^0.0.3",
         "@wxn0brp/db": "^0.100.1",
         "@wxn0brp/db-core": "^0.10.2",
-        "@wxn0brp/db-storage-dir": "^0.100.0",
+        "@wxn0brp/db-storage-dir": "^0.101.0",
         "@wxn0brp/db-string-query": "^0.100.0",
         "@wxn0brp/falcon-frame": "^0.8.1",
         "@wxn0brp/gate-warden": "^0.6.1",
