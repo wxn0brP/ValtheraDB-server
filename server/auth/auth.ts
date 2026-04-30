@@ -14,6 +14,9 @@ const cache = new AnotherCache<Id>({
 export const authMiddleware: RouteHandler = async (req, res, next) => {
     let token = req.headers["authorization"];
 
+    if (!token && req.body.auth)
+        token = req.body.auth;
+
     if (!token)
         return res.status(401).json({ err: true, msg: "Access denied. No token provided." });
 
