@@ -6,7 +6,7 @@ import jwtManager from "../init/keys";
 import { checkUserAccess, generateToken, TokenTime } from "./helpers";
 
 const TOKEN_CACHE_TTL = parseInt(process.env.TOKEN_CACHE_TTL) || 900; // 15 minutes
-const cache = new AnotherCache<Id>({
+export const cache = new AnotherCache<Id>({
     ttl: TOKEN_CACHE_TTL,
     cleanupInterval: TOKEN_CACHE_TTL,
 });
@@ -30,6 +30,18 @@ export const authMiddleware: RouteHandler = async (req, res, next) => {
     }
 
     try {
+        if (token.startsWith("_wolf_")) {
+            token = token.replace("_wolf_", "");
+            const tokenD = await internalDB.wolf.findOne({ token });
+            if (!tokenD)
+                return res.status(401).json({ err: true, msg: "Invalid token." });
+
+            req.user = { _id: tokenD._id };
+            cache.set(token, tokenD._id);
+            next();
+            return;
+        }
+
         const data = await jwtManager.decode(token) as { uid: Id; _id: Id };
         if (!data || !data.uid || !data._id)
             return res.status(401).json({ err: true, msg: "Invalid token." });

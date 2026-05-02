@@ -3,10 +3,6 @@ import crypto from "crypto";
 import { internalDB } from "../init/initDataBases";
 import jwtManager from "../init/keys";
 
-function sha(str: string) {
-    return crypto.createHash("sha256").update(str).digest("hex");
-}
-
 export type TokenTime = string | number | boolean;
 
 export async function generateToken(payload: any, time: TokenTime = false) {
@@ -16,7 +12,8 @@ export async function generateToken(payload: any, time: TokenTime = false) {
     const token = await jwtManager.create(payload, time);
     const exists = await internalDB.token.findOne({ _id: payload._id });
 
-    if (!exists) await internalDB.token.add({ _id: payload._id, sha: sha(token) });
+    if (!exists)
+        await internalDB.token.add({ _id: payload._id, sha: generateHash(token) });
 
     return token;
 }
