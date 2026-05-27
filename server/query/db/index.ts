@@ -1,14 +1,20 @@
-import { Router } from "@wxn0brp/falcon-frame";
+import { FFRequest, Router } from "@wxn0brp/falcon-frame";
 import { dbLogic } from "./logic";
 
 const router = new Router();
+
+function getQuery(req: FFRequest) {
+    const data = req.body.params;
+    if (!data) return {};
+    return Array.isArray(data) ? (data[0] || {}) : data;
+}
 
 router.post("/:type", async (req, res) => {
     const result = await dbLogic({
         type: req.params.type,
         dbName: req.body.db,
         userId: req.user._id,
-        query: req.body.params?.[0] || {},
+        query: getQuery(req),
         keys: req.body.keys || []
     });
 
@@ -17,7 +23,6 @@ router.post("/:type", async (req, res) => {
 
 router.post("/:db/:type", async (req, res) => {
     const collection = req.query?.c || "";
-    const params = req.body.params?.[0] || {};
 
     const result = await dbLogic({
         type: req.params.type,
@@ -25,7 +30,7 @@ router.post("/:db/:type", async (req, res) => {
         userId: req.user._id,
         query: {
             collection,
-            ...params
+            ...getQuery(req)
         },
         keys: req.body.keys || []
     });
