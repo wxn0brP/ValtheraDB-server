@@ -4,9 +4,11 @@ import { dbLogic } from "./logic";
 const router = new Router();
 
 function getQuery(req: FFRequest) {
-    const data = req.body.params;
-    if (!data) return {};
-    return Array.isArray(data) ? (data[0] || {}) : data;
+    const { query, params } = req.body;
+    if (query) return query;
+    if (params) return {};
+    const data = Array.isArray(params) ? params[0] : params;
+    return data || {};
 }
 
 router.post("/:type", async (req, res) => {
