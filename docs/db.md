@@ -1,33 +1,45 @@
 # Database Operations API (`/db`)
 
-The `/db/:type` endpoint allows direct method calls on a database instance.
+## Main endpoint
 
-- `:type`: The method to execute (e.g., `find`, `add`, `update`, `remove`).
+### `POST /:op`
 
-**Body:**
+Operation is the URL parameter, database name in the body.
 
-- `db` (string, required): The database name.
-- `params` (array, required): Parameters for the method. The first parameter is always the collection name.
-- `keys` (array, optional): Paths to keys in `params` that contain stringified functions to be deserialized on the server.
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `db` | `string` | yes | Database name |
+| `query` | `object` | yes | Query object |
+| `keys` | `string[][]` | no | Paths to keys in `query` containing stringified functions to deserialize |
+| `auth` | `string` | no | Authentication token for the database |
 
-**Example: Insert a document**
+Header `Authorization: Bearer <token>` is also supported.
+
+**Example: Insert a document:**
 
 ```javascript
 fetch('http://localhost:14785/db/add', {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer <token>'
+  headers: { 
+    'Content-Type': 'application/json'
   },
   body: JSON.stringify({
     db: 'mainDB',
-    params: [{
+    auth: 'myToken',
+    query: {
       collection: 'users',
       data: { 
         name: 'John Doe',
         age: 30
       }
-    }]
+    }
   })
 });
 ```
+
+## Additional endpoints
+
+- **`POST /`** - operation in `body.op`, database in `body.db`.
+- **`POST /:db/:op`** - database and operation in the URL; optional `?c=` for collection.
+
+> **Note:** The legacy `params` field is deprecated and will be removed soon. Use `query` instead.
