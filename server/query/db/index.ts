@@ -1,4 +1,4 @@
-import { FFRequest, Router } from "@wxn0brp/falcon-frame";
+import { FFRequest, RouteHandler, Router } from "@wxn0brp/falcon-frame";
 import { dbLogic } from "./logic";
 
 const router = new Router();
@@ -39,5 +39,17 @@ router.post("/:db/:type", async (req, res) => {
 
     result.ff(res);
 });
+
+export const rootRouter: RouteHandler = async (req, res) => {
+    const result = await dbLogic({
+        type: req.body.op,
+        dbName: req.body.db,
+        userId: req.user._id,
+        query: getQuery(req),
+        keys: req.body.keys || []
+    });
+
+    result.ff(res);
+}
 
 export default router;

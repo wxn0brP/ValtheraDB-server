@@ -1,7 +1,7 @@
 import { Router } from "@wxn0brp/falcon-frame";
 import { authMiddleware } from "../auth/auth";
 import csvRouter from "../query/csvFile";
-import dbRouter from "../query/db";
+import dbRouter, { rootRouter } from "../query/db";
 import queryRouter from "../query/query";
 import { relationRouter } from "../query/relation";
 import sqlRouter from "../query/sqlFile";
@@ -18,3 +18,4 @@ apiRouter.use("/q", queryRouter);
 apiRouter.use("/r", relationRouter);
 apiRouter.use("/sql", sqlRouter);
 apiRouter.use("/csv", csvRouter);
+apiRouter.post("/", rootRouter);
