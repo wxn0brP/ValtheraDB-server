@@ -13,7 +13,7 @@ export interface Query {
     // dbDir: string;
     userId: string;
     query: VQuery;
-    keys: string[];
+    keys: string[][];
 }
 
 export class Response {
