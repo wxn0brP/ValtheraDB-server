@@ -6,6 +6,7 @@ import { dataCenter } from "../init/initDataBases";
 import { runtime_dir } from "../init/vars";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
+import { changeStringToFunction } from "@wxn0brp/wts-run-fn";
 
 export const relationRouter = new Router();
 
@@ -88,7 +89,11 @@ relationRouter.post("/:type", async (req, res) => {
         if (typeof check === "object")
             return res.status(400).json({ err: true, msg: "invalid accessCfg collection " + JSON.stringify(check) });
 
-        const result = await relation[type](collection, ...params as any[]);
+        let search = params.shift() as string | Object;
+        if (typeof search === "string")
+            search = changeStringToFunction(search)
+
+        const result = await relation[type](collection, search, ...params as any[]);
 
         res.json({ err: false, result });
     } catch (err) {
