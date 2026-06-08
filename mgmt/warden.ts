@@ -20,6 +20,7 @@ const [, , className, methodName, ...args] = process.argv;
 
 if (!className || !methodName) {
     console.error(`Usage: <class> <method> [...args]`);
+    console.log("Low-level Gate Warden wrapper.");
     console.log("Available:");
     for (const [key, cls] of Object.entries(classes)) {
         const methods = Object.getOwnPropertyNames(cls.prototype).filter(m => m !== "constructor");

@@ -63,7 +63,7 @@ Edit the `.env` file to suit your environment and requirements.
 Use the management command to configure or control the server:
 
 ```bash
-npm run mgmt #<args>
+./mgr.sh #<args>
 ```
 
 And to run the right management command:

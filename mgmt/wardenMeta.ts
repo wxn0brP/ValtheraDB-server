@@ -55,7 +55,7 @@ export const cliMeta = {
             returns: "Promise<void>"
         },
         addRoleToUser: {
-            description: "Adds a role to a user",
+            description: "Low-level Gate Warden command.",
             args: [
                 {
                     name: "user_id",
@@ -71,7 +71,7 @@ export const cliMeta = {
             returns: "Promise<void>"
         },
         removeRoleFromUser: {
-            description: "Removes a role from a user",
+            description: "Low-level Gate Warden command.",
             args: [
                 {
                     name: "user_id",
@@ -116,7 +116,7 @@ export const cliMeta = {
             returns: "Promise<Id>"
         },
         addRole: {
-            description: "Adds a new role",
+            description: "Low-level Gate Warden command.",
             args: [
                 {
                     name: "role",
@@ -127,7 +127,7 @@ export const cliMeta = {
             returns: "Promise<Role>"
         },
         addACLRule: {
-            description: "Adds an ACL rule for an entity and user",
+            description: "Low-level Gate Warden command.",
             args: [
                 {
                     name: "entityId",
@@ -148,7 +148,7 @@ export const cliMeta = {
             returns: "Promise<void>"
         },
         addRBACRule: {
-            description: "Adds an RBAC rule for a role and entity",
+            description: "Low-level Gate Warden command.",
             args: [
                 {
                     name: "role_id",
@@ -190,7 +190,7 @@ export const cliMeta = {
             returns: "Promise<void>"
         },
         removeRole: {
-            description: "Removes a role by ID",
+            description: "Low-level Gate Warden command.",
             args: [
                 {
                     name: "roleId",
@@ -201,7 +201,7 @@ export const cliMeta = {
             returns: "Promise<boolean>"
         },
         removeACLRule: {
-            description: "Removes an ACL rule for an entity and optionally a user",
+            description: "Low-level Gate Warden command.",
             args: [
                 {
                     name: "entityId",
@@ -217,7 +217,7 @@ export const cliMeta = {
             returns: "Promise<boolean>"
         },
         removeRBACRule: {
-            description: "Removes an RBAC rule for a role and entity",
+            description: "Low-level Gate Warden command.",
             args: [
                 {
                     name: "roleId",
