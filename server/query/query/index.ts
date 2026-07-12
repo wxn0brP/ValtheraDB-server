@@ -41,16 +41,16 @@ router.post("/:parserType", async (req, res) => {
 
         const type = query.method;
 
-        if (type === "getCollections") {
-            const collections = await db.getCollections();
-            return res.json({ err: false, result: collections });
-        }
-
         if (!db[type] || typeof db[type] !== "function")
             return res.status(400).json({ err: true, msg: "invalid type" });
 
         if (!await checkPermission(req.user._id, type, dbName))
             return res.status(403).json({ err: true, msg: "access denied" });
+
+        if (type === "getCollections") {
+            const collections = await db.getCollections();
+            return res.json({ err: false, result: collections });
+        }
 
         if (!query.query || typeof query.query !== "object")
             return res.status(400).json({ err: true, msg: "args is required" });

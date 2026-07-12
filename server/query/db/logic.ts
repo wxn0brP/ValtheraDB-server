@@ -72,14 +72,14 @@ export async function dbLogic(query: Query): Promise<Response> {
 
     try {
         const { db, dir: dbDir } = dbObj;
+        if (!db[type] || typeof db[type] !== "function") return res.e(Codes.INVALID_TYPE);
+
+        if (!await checkPermission(userId, type, dbName)) return res.e(Codes.ACCESS_DENIED, 403);
+
         if (type === "getCollections") {
             const collections = await db.getCollections();
             return res.r(collections);
         }
-
-        if (!db[type] || typeof db[type] !== "function") return res.e(Codes.INVALID_TYPE);
-
-        if (!await checkPermission(userId, type, dbName)) return res.e(Codes.ACCESS_DENIED, 403);
 
         if (!params || typeof params !== "object" || !params.collection) return res.e(Codes.PARAMS_REQ);
 
