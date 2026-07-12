@@ -17,7 +17,8 @@ export const sqlProxy: RouteHandler = async (req, res) => {
 
     try {
         const query = parser.parse(req.body.query);
-        if (!query) throw new Error("Invalid query");
+        if (!query)
+            return res.status(400).json({ err: true, msg: "Invalid query" });
 
         const type = query.method;
 
@@ -31,14 +32,6 @@ export const sqlProxy: RouteHandler = async (req, res) => {
         }
 
         const { db, dir } = dbData;
-
-        // if (type === "getCollections") {
-        //     const collections = await db.getCollections();
-        //     return {
-        //         columns: ["affected_rows"],
-        //         rows: [[1]]
-        //     }
-        // }
 
         if (!query.query || typeof query.query !== "object") {
             return res.status(400).json({ err: true, msg: "args is required" });
@@ -58,15 +51,23 @@ export const sqlProxy: RouteHandler = async (req, res) => {
             const data = Array.isArray(result) ? result : [result];
             const keys = Object.keys(Object.assign({}, ...data));
             return {
-                columns: keys,
-                rows: data.map(d => keys.map(k => d[k] || null))
+                err: false,
+                result: {
+                    columns: keys,
+                    rows: data.map(d => keys.map(k => d[k] || null))
+                }
             }
         }
-        throw new Error("OK");
-    } catch {
+
         return {
-            columns: ["affected_rows"],
-            rows: [[1]]
+            err: false,
+            result: {
+                columns: ["affected_rows"],
+                rows: [[1]]
+            }
         }
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ err: true, msg: err.message });
     }
 }

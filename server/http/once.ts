@@ -6,7 +6,7 @@ export const onceRouter = new Router();
 
 onceRouter.post("/login", async (req, res) => {
     const { login, password, time } = req.body;
-    if (!login || !password) return res.json({ err: true, msg: "Login and password are required" });
+    if (!login || !password) return res.status(400).json({ err: true, msg: "Login and password are required" });
 
     if (
         time !== undefined && (
@@ -16,10 +16,10 @@ onceRouter.post("/login", async (req, res) => {
             !isNaN(parseInt(time))
         )
     )
-        return res.json({ err: true, msg: "Invalid time." })
+        return res.status(400).json({ err: true, msg: "Invalid time." })
 
     const access = await loginFunction(login, password);
-    if (access.err == true) return res.json(access);
+    if (access.err === true) return res.status(400).json(access);
 
     res.json({ err: false, token: access.token });
 });
