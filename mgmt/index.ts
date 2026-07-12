@@ -71,6 +71,48 @@ db
     });
 
 db
+    .command("create <dbName> <login> <password> [permissions...]")
+    .description("Create a database with a user and assign access")
+    .action(async (dbName, login, password, permissions) => {
+        const perm = permissions.length ? permissions.join(" ") : "all";
+
+        const dbExists = await internalDB.dbs.findOne({ name: dbName });
+        if (dbExists) {
+            console.log(`Database "${dbName}" already exists`);
+        } else {
+            await internalDB.dbs.add({ name: dbName, folder: dbName, opts: {} }, false);
+            console.log(`Database "${dbName}" created`);
+        }
+
+        const userRes = await addUserAccess(login, password);
+        if (userRes.err) {
+            console.log(`User: ${userRes.msg}`);
+        } else {
+            console.log(`User "${login}" created (id: ${userRes.user._id})`);
+        }
+
+        const userId = await resolveUserId(login);
+
+        const roleId = `${dbName}-access`;
+        try {
+            await wardenMgmt.addRole({ _id: roleId, name: `${dbName} access` });
+            console.log(`Role "${roleId}" created`);
+        } catch {
+            console.log(`Role "${roleId}" already exists`);
+        }
+
+        const permValue = parsePermission(perm);
+        await wardenMgmt.addRBACRule(roleId, dbName, permValue);
+        console.log(`Permissions "${perm}" (${permValue}) granted on "${dbName}" to role "${roleId}"`);
+
+        await userMgmt.addRoleToUser(userId, roleId);
+        console.log(`User "${login}" assigned to role "${roleId}"`);
+
+        console.log("Done");
+        process.exit(0);
+    });
+
+db
     .command("list [json]")
     .description("List all databases")
     .action(async (json) => {
