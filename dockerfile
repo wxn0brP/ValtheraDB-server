@@ -11,4 +11,5 @@ COPY gui ./gui
 VOLUME ["/app/volumes"]
 
 EXPOSE 14785
+EXPOSE 14786
 CMD ["bun", "run", "./server/index.ts"]
