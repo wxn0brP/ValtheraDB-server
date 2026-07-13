@@ -9,6 +9,7 @@ import sqlRouter from "../query/sqlFile";
 export const apiRouter = new Router();
 apiRouter.use(authMiddleware);
 apiRouter.use((req, res, next) => {
+    res.setHeader("Connection", "keep-alive");
     res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
     res.setHeader("Pragma", "no-cache");
     next();

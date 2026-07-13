@@ -22,8 +22,13 @@ const httpEnabled = process.env.HTTP_ENABLED !== "false";
 const certPath = process.env.SSL_CERT;
 const keyPath = process.env.SSL_KEY;
 
+const keepAliveTimeout = +process.env.KEEPALIVE_TIMEOUT || 60000;
+
 if (httpEnabled) {
-    http.createServer(handler).listen(port, () => {
+    const httpServer = http.createServer(handler);
+    httpServer.keepAliveTimeout = keepAliveTimeout;
+    httpServer.headersTimeout = keepAliveTimeout + 5000;
+    httpServer.listen(port, () => {
         console.log(`HTTP server started on port ${port}`);
     });
 }
@@ -43,7 +48,10 @@ if (certPath && keyPath) {
             sslOpts.ca = readFileSync(caPath, "utf8");
         }
 
-        https.createServer(sslOpts, handler).listen(sslPort, () => {
+        const httpsServer = https.createServer(sslOpts, handler);
+        httpsServer.keepAliveTimeout = keepAliveTimeout;
+        httpsServer.headersTimeout = keepAliveTimeout + 5000;
+        httpsServer.listen(sslPort, () => {
             const proto = caPath ? " (CA)" : "";
             console.log(`HTTPS${proto} server started on port ${sslPort}`);
         });
