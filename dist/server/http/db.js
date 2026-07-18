@@ -1,0 +1,21 @@
+import { Router } from "@wxn0brp/falcon-frame";
+import { authMiddleware } from "../auth/auth.js";
+import csvRouter from "../query/csvFile.js";
+import dbRouter, { rootRouter } from "../query/db/index.js";
+import queryRouter from "../query/query/index.js";
+import { relationRouter } from "../query/relation.js";
+import sqlRouter from "../query/sqlFile.js";
+export const apiRouter = new Router();
+apiRouter.use(authMiddleware);
+apiRouter.use((req, res, next) => {
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+    res.setHeader("Pragma", "no-cache");
+    next();
+});
+apiRouter.use("/db", dbRouter);
+apiRouter.use("/q", queryRouter);
+apiRouter.use("/r", relationRouter);
+apiRouter.use("/sql", sqlRouter);
+apiRouter.use("/csv", csvRouter);
+apiRouter.post("/", rootRouter);
