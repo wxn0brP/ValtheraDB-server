@@ -35,7 +35,7 @@
     "devDependencies": {
         "@types/node": "*",
         "tsc-alias": "^1",
-        "typescript": "^6"
+        "typescript": "^7.0.0"
     },
     "scripts": {
         "build": "tsc && tsc-alias",
