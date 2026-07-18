@@ -21,7 +21,7 @@
     "type": "module",
     "dependencies": {
         "@wxn0brp/ac": "^0.1.0",
-        "@wxn0brp/db": "^0.110.0",
+        "@wxn0brp/db": "^0.112.0",
         "@wxn0brp/db-core": "^0.11.0",
         "@wxn0brp/db-storage-dir": "^0.110.0",
         "@wxn0brp/db-string-query": "^0.110.0",
