@@ -25,39 +25,47 @@ const keyPath = process.env.SSL_KEY;
 const keepAliveTimeout = +process.env.KEEPALIVE_TIMEOUT || 60000;
 
 if (httpEnabled) {
-    const httpServer = http.createServer(handler);
-    httpServer.keepAliveTimeout = keepAliveTimeout;
-    httpServer.headersTimeout = keepAliveTimeout + 5000;
-    httpServer.listen(port, () => {
-        console.log(`HTTP server started on port ${port}`);
-    });
+	const httpServer = http.createServer(handler);
+	httpServer.keepAliveTimeout = keepAliveTimeout;
+	httpServer.headersTimeout = keepAliveTimeout + 5000;
+	httpServer.listen(port, () => {
+		console.log(`HTTP server started on port ${port}`);
+	});
 }
 
 if (certPath && keyPath) {
-    if (!existsSync(certPath) || !existsSync(keyPath)) {
-        console.warn(`SSL_CERT or SSL_KEY file not found, HTTPS server not started`);
-    } else {
-        const sslPort = +process.env.SSL_PORT || port + 1;
-        const sslOpts: { key: string; cert: string; ca?: string } = {
-            key: readFileSync(keyPath, "utf8"),
-            cert: readFileSync(certPath, "utf8"),
-        };
+	if (!existsSync(certPath) || !existsSync(keyPath)) {
+		console.warn(
+			`SSL_CERT or SSL_KEY file not found, HTTPS server not started`,
+		);
+	} else {
+		const sslPort = +process.env.SSL_PORT || port + 1;
+		const sslOpts: {
+			key: string;
+			cert: string;
+			ca?: string;
+		} = {
+			key: readFileSync(keyPath, "utf8"),
+			cert: readFileSync(certPath, "utf8"),
+		};
 
-        const caPath = process.env.SSL_CA;
-        if (caPath && existsSync(caPath)) {
-            sslOpts.ca = readFileSync(caPath, "utf8");
-        }
+		const caPath = process.env.SSL_CA;
+		if (caPath && existsSync(caPath)) {
+			sslOpts.ca = readFileSync(caPath, "utf8");
+		}
 
-        const httpsServer = https.createServer(sslOpts, handler);
-        httpsServer.keepAliveTimeout = keepAliveTimeout;
-        httpsServer.headersTimeout = keepAliveTimeout + 5000;
-        httpsServer.listen(sslPort, () => {
-            const proto = caPath ? " (CA)" : "";
-            console.log(`HTTPS${proto} server started on port ${sslPort}`);
-        });
-    }
+		const httpsServer = https.createServer(sslOpts, handler);
+		httpsServer.keepAliveTimeout = keepAliveTimeout;
+		httpsServer.headersTimeout = keepAliveTimeout + 5000;
+		httpsServer.listen(sslPort, () => {
+			const proto = caPath ? " (CA)" : "";
+			console.log(`HTTPS${proto} server started on port ${sslPort}`);
+		});
+	}
 }
 
 if (!httpEnabled && !(certPath && keyPath)) {
-    console.warn("No server started - HTTP is disabled and no SSL cert/key configured");
+	console.warn(
+		"No server started - HTTP is disabled and no SSL cert/key configured",
+	);
 }

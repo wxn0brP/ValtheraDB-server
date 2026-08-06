@@ -2,7 +2,9 @@ import { configDotenv } from "dotenv";
 import { initKeys } from "./init/keys";
 import { runtime_dir } from "./init/vars";
 
-configDotenv({ quiet: true });
+configDotenv({
+	quiet: true,
+});
 await import("./init/initDataBases");
 await initKeys();
 

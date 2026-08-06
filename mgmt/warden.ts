@@ -5,58 +5,67 @@ import { Valthera } from "@wxn0brp/db/valthera";
 import { internal_db_dir } from "../server/init/vars";
 
 const classes = {
-    user: UserManager,
-    mgr: WardenManager
+	user: UserManager,
+	mgr: WardenManager,
 };
 
 const db = new Valthera(internal_db_dir);
 
 const classesConstructors = {
-    user: [db],
-    mgr: [db],
+	user: [
+		db,
+	],
+	mgr: [
+		db,
+	],
 };
 
 const [, , className, methodName, ...args] = process.argv;
 
 if (!className || !methodName) {
-    console.error(`Usage: <class> <method> [...args]`);
-    console.log("Low-level Gate Warden wrapper.");
-    console.log("Available:");
-    for (const [key, cls] of Object.entries(classes)) {
-        const methods = Object.getOwnPropertyNames(cls.prototype).filter(m => m !== "constructor");
-        const body = methods.join("\n  ");
-        console.log(` ${key}:\n  ${body}`);
-    }
-    process.exit(1);
+	console.error(`Usage: <class> <method> [...args]`);
+	console.log("Low-level Gate Warden wrapper.");
+	console.log("Available:");
+	for (const [key, cls] of Object.entries(classes)) {
+		const methods = Object.getOwnPropertyNames(cls.prototype).filter(
+			m => m !== "constructor",
+		);
+		const body = methods.join("\n  ");
+		console.log(` ${key}:\n  ${body}`);
+	}
+	process.exit(1);
 }
 
 const ClassCtor = classes[className];
 if (!ClassCtor) {
-    console.error(`Class "${className}" not found`);
-    process.exit(1);
+	console.error(`Class "${className}" not found`);
+	process.exit(1);
 }
 
-let hasHelp = args.includes("--help") || args.includes("-h") || args.includes("-?");
+let hasHelp =
+	args.includes("--help") || args.includes("-h") || args.includes("-?");
 const meta = cliMeta[className]?.[methodName];
 let requiredArgs = 0;
 
 if (meta) {
-    meta.args?.forEach((a: any) => {
-        requiredArgs += a.required ? 1 : 0;
-    });
-    hasHelp = hasHelp || requiredArgs > args.length;
+	meta.args?.forEach((a: any) => {
+		requiredArgs += a.required ? 1 : 0;
+	});
+	hasHelp = hasHelp || requiredArgs > args.length;
 }
 
 if (meta && hasHelp) {
-    console.log(`${className}.${methodName}()`);
-    if (meta.description) console.log(`| ${meta.description}`);
+	console.log(`${className}.${methodName}()`);
+	if (meta.description) console.log(`| ${meta.description}`);
 
-    meta.args?.forEach((a: any, i: number) => {
-        console.log(`| Arg ${i + 1}: ${a.name} (${a.type})${a.required ? " [required]" : ""}`);
-    });
+	meta.args?.forEach((a: any, i: number) => {
+		console.log(
+			`| Arg ${i + 1}: ${a.name} (${a.type})${a.required ? " [required]" : ""}`,
+		);
+	});
 
-    if (meta.returns) console.log(`| Returns: ${meta.returns}`);
-    process.exit(0);
+	if (meta.returns) console.log(`| Returns: ${meta.returns}`);
+	process.exit(0);
 }
 
 const classArgs = classesConstructors[className] || [];
@@ -64,23 +73,23 @@ const instance = new ClassCtor(...classArgs);
 
 const fn = (instance as any)[methodName];
 if (!fn || typeof fn !== "function") {
-    console.error(`Method "${methodName}" not found on class "${className}"`);
-    process.exit(1);
+	console.error(`Method "${methodName}" not found on class "${className}"`);
+	process.exit(1);
 }
 
 const parsedArgs = args.map(arg => {
-    try {
-        return JSON5.parse(arg);
-    } catch {
-        return arg;
-    }
+	try {
+		return JSON5.parse(arg);
+	} catch {
+		return arg;
+	}
 });
 
 Promise.resolve(fn.apply(instance, parsedArgs))
-    .then((res) => {
-        if (res !== undefined) console.log(JSON.stringify(res, null, 2));
-    })
-    .catch((err) => {
-        console.error("Error:", err.message);
-        process.exit(1);
-    });
+	.then(res => {
+		if (res !== undefined) console.log(JSON.stringify(res, null, 2));
+	})
+	.catch(err => {
+		console.error("Error:", err.message);
+		process.exit(1);
+	});

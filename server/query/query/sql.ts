@@ -6,68 +6,104 @@ import { checkPermission } from "../../utils/perm";
 import { getDb } from "./utils";
 
 export const sqlProxy: RouteHandler = async (req, res) => {
-    if (!req.body.query)
-        return res.status(400).json({ err: true, msg: "query is required" });
+	if (!req.body.query)
+		return res.status(400).json({
+			err: true,
+			msg: "query is required",
+		});
 
-    if (!req.body.db)
-        return res.status(400).json({ err: true, msg: "db is required" });
+	if (!req.body.db)
+		return res.status(400).json({
+			err: true,
+			msg: "db is required",
+		});
 
+	const parser = new ValtheraDbParsers.sql();
 
-    const parser = new ValtheraDbParsers.sql();
+	try {
+		const query = parser.parse(req.body.query);
+		if (!query)
+			return res.status(400).json({
+				err: true,
+				msg: "Invalid query",
+			});
 
-    try {
-        const query = parser.parse(req.body.query);
-        if (!query)
-            return res.status(400).json({ err: true, msg: "Invalid query" });
+		const type = query.method;
 
-        const type = query.method;
+		if (!(await checkPermission(req.user._id, type, req.body.db))) {
+			return res.status(403).json({
+				err: true,
+				msg: "access denied",
+			});
+		}
 
-        if (!await checkPermission(req.user._id, type, req.body.db)) {
-            return res.status(403).json({ err: true, msg: "access denied" });
-        }
+		const dbData = getDb(req.body.db);
+		if (!dbData) {
+			return res.status(400).json({
+				err: true,
+				msg: "Invalid data center.",
+			});
+		}
 
-        const dbData = getDb(req.body.db);
-        if (!dbData) {
-            return res.status(400).json({ err: true, msg: "Invalid data center." });
-        }
+		const { db, dir } = dbData;
 
-        const { db, dir } = dbData;
+		if (!query.query || typeof query.query !== "object") {
+			return res.status(400).json({
+				err: true,
+				msg: "args is required",
+			});
+		}
 
-        if (!query.query || typeof query.query !== "object") {
-            return res.status(400).json({ err: true, msg: "args is required" });
-        }
+		const collection = query.query.collection;
 
-        const collection = query.query.collection;
+		if (!collection)
+			return res.status(400).json({
+				err: true,
+				msg: "collection is required",
+			});
 
-        if (!collection)
-            return res.status(400).json({ err: true, msg: "collection is required" });
+		if (!isPathSafe(runtime_dir, dir, collection))
+			return res.status(400).json({
+				err: true,
+				msg: "invalid collection",
+			});
 
-        if (!isPathSafe(runtime_dir, dir, collection))
-            return res.status(400).json({ err: true, msg: "invalid collection" });
+		const result = await db[type](query);
 
-        const result = await db[type](query);
+		if (type === "find" || type === "findOne") {
+			const data = Array.isArray(result)
+				? result
+				: [
+						result,
+					];
+			const keys = Object.keys(Object.assign({}, ...data));
+			return {
+				err: false,
+				result: {
+					columns: keys,
+					rows: data.map(d => keys.map(k => d[k] || null)),
+				},
+			};
+		}
 
-        if (type === "find" || type === "findOne") {
-            const data = Array.isArray(result) ? result : [result];
-            const keys = Object.keys(Object.assign({}, ...data));
-            return {
-                err: false,
-                result: {
-                    columns: keys,
-                    rows: data.map(d => keys.map(k => d[k] || null))
-                }
-            }
-        }
-
-        return {
-            err: false,
-            result: {
-                columns: ["affected_rows"],
-                rows: [[1]]
-            }
-        }
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ err: true, msg: err.message });
-    }
-}
+		return {
+			err: false,
+			result: {
+				columns: [
+					"affected_rows",
+				],
+				rows: [
+					[
+						1,
+					],
+				],
+			},
+		};
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({
+			err: true,
+			msg: err.message,
+		});
+	}
+};
