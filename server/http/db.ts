@@ -4,6 +4,7 @@ import csvRouter from "../query/csvFile";
 import dbRouter, { rootRouter } from "../query/db";
 import queryRouter from "../query/query";
 import { relationRouter } from "../query/relation";
+import restRouter from "../query/rest";
 import sqlRouter from "../query/sqlFile";
 
 export const apiRouter = new Router();
@@ -17,6 +18,7 @@ apiRouter.use((req, res, next) => {
 apiRouter.use("/db", dbRouter);
 apiRouter.use("/q", queryRouter);
 apiRouter.use("/r", relationRouter);
+apiRouter.use("/rest", restRouter);
 apiRouter.use("/sql", sqlRouter);
 apiRouter.use("/csv", csvRouter);
 apiRouter.post("/", rootRouter);
