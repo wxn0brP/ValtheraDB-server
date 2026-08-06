@@ -1,17 +1,17 @@
 import { Id, Relation, RelationTypes, ValtheraCompatible } from "@wxn0brp/db";
-import { Remote, ValtheraRemote } from "@wxn0brp/db-client";
+import { RemoteConfig, ValtheraRemote } from "@wxn0brp/db-client";
 import { Valthera } from "@wxn0brp/db/valthera";
 import { Router } from "@wxn0brp/falcon-frame";
+import { changeStringToFunction } from "@wxn0brp/wts-run-fn";
 import { dataCenter } from "../init/initDataBases";
 import { runtime_dir } from "../init/vars";
 import { isPathSafe } from "../utils/path";
 import { checkPermission } from "../utils/perm";
-import { changeStringToFunction } from "@wxn0brp/wts-run-fn";
 
 export const relationRouter = new Router();
 
 interface AccessCfg {
-	[key: string]: Remote | string;
+	[key: string]: RemoteConfig | string;
 }
 
 async function createRelation(
