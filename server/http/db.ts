@@ -2,6 +2,7 @@ import { Router } from "@wxn0brp/falcon-frame";
 import { PluginSystem } from "@wxn0brp/falcon-frame-plugin";
 import { createRateLimiterPlugin } from "@wxn0brp/falcon-frame-plugin/plugins/rateLimit";
 import { authMiddleware } from "../auth/auth";
+import { auditMiddleware } from "../middleware/audit";
 import csvRouter from "../query/csvFile";
 import dbRouter, { rootRouter } from "../query/db";
 import queryRouter from "../query/query";
@@ -26,6 +27,7 @@ apiLimiter.register(
 export const apiRouter = new Router();
 apiRouter.use(apiLimiter.getRouteHandler());
 apiRouter.use(authMiddleware);
+apiRouter.use(auditMiddleware);
 apiRouter.use((req, res, next) => {
 	res.setHeader("Connection", "keep-alive");
 	res.setHeader(

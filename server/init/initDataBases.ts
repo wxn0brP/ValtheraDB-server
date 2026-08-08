@@ -7,6 +7,7 @@ import { join } from "path";
 import { cache as authCache } from "../auth/auth";
 import { DataBaseBuilder } from "../types";
 import { User as ServerUser } from "../types/user";
+import logger from "../utils/logger";
 import { cache as permCache } from "../utils/perm";
 import { db_base_dir, internal_db_dir } from "./vars";
 
@@ -71,11 +72,11 @@ watch(
 			case "dbs":
 				loadDataBases();
 				permCache.clear();
-				console.log("DBs reloaded");
+				logger.info("DBs reloaded");
 				break;
 			case "token":
 				authCache.clear();
-				console.log("Token cache reloaded");
+				logger.info("Token cache reloaded");
 				break;
 			case "acl":
 			case "abac":
@@ -87,7 +88,7 @@ watch(
 			case "encryptionKeys":
 				permCache.clear();
 				authCache.clear();
-				console.log("Permissions & Auth cache reloaded");
+				logger.info("Permissions & Auth cache reloaded");
 				break;
 		}
 	},

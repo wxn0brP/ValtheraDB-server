@@ -2,6 +2,7 @@ import { genId } from "@wxn0brp/db";
 import crypto from "crypto";
 import { internalDB } from "../init/initDataBases";
 import jwtManager from "../init/keys";
+import { auditAuth } from "../utils/audit";
 
 export type TokenTime = string | number | boolean;
 
@@ -14,11 +15,13 @@ export async function generateToken(payload: any, time: TokenTime = false) {
 		_id: payload._id,
 	});
 
-	if (!exists)
+	if (!exists) {
 		await internalDB.token.add({
 			_id: payload._id,
 			sha: generateHash(token),
 		});
+		await auditAuth("token_created", payload.uid, "success");
+	}
 
 	return token;
 }

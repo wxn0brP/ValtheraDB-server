@@ -1,6 +1,7 @@
 import { configDotenv } from "dotenv";
 import { initKeys } from "./init/keys";
 import { runtime_dir } from "./init/vars";
+import logger from "./utils/logger";
 
 configDotenv({
 	quiet: true,
@@ -8,5 +9,5 @@ configDotenv({
 await import("./init/initDataBases");
 await initKeys();
 
-console.log("Runtime dir:", runtime_dir);
+logger.info("Runtime dir:", runtime_dir);
 await import("./http");

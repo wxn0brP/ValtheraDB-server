@@ -1,10 +1,11 @@
+import { VQuery } from "@wxn0brp/db-core/types/query";
 import { FFResponse } from "@wxn0brp/falcon-frame";
 import { deserializeFunctions } from "@wxn0brp/wts-run-fn";
 import { dataCenter } from "../../init/initDataBases";
 import { runtime_dir } from "../../init/vars";
 import { isPathSafe } from "../../utils/path";
+import logger from "../../utils/logger";
 import { checkPermission } from "../../utils/perm";
-import { VQuery } from "@wxn0brp/db-core/types/query";
 
 export interface Query {
 	type: string;
@@ -98,7 +99,7 @@ export async function dbLogic(query: Query): Promise<Response> {
 
 		return res.r(result);
 	} catch (err) {
-		console.error(err);
+		logger.error(err);
 		return res.e(err.message, 500);
 	}
 }

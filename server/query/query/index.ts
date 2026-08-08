@@ -2,6 +2,7 @@ import { ValtheraQuery } from "@wxn0brp/db-string-query/types";
 import { Router } from "@wxn0brp/falcon-frame";
 import { runtime_dir } from "../../init/vars";
 import { isPathSafe } from "../../utils/path";
+import logger from "../../utils/logger";
 import { checkPermission } from "../../utils/perm";
 import { sqlProxy } from "./sql";
 import { getDb, getParser } from "./utils";
@@ -102,7 +103,7 @@ router.post("/:parserType", async (req, res) => {
 			result,
 		});
 	} catch (err) {
-		console.error(err);
+		logger.error(err);
 		res.status(500).json({
 			err: true,
 			msg: err.message,

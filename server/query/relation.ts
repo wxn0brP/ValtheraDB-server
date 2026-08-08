@@ -6,6 +6,7 @@ import { changeStringToFunction } from "@wxn0brp/wts-run-fn";
 import { dataCenter } from "../init/initDataBases";
 import { runtime_dir } from "../init/vars";
 import { isPathSafe } from "../utils/path";
+import logger from "../utils/logger";
 import { checkPermission } from "../utils/perm";
 
 export const relationRouter = new Router();
@@ -141,7 +142,7 @@ relationRouter.post("/:type", async (req, res) => {
 			result,
 		});
 	} catch (err) {
-		console.error(err);
+		logger.error(err);
 		res.status(500).json({
 			err: true,
 			msg: err.message,

@@ -4,6 +4,7 @@ import http from "http";
 import https from "https";
 import { apiRouter } from "./db";
 import { onceRouter } from "./once";
+import logger from "../utils/logger";
 
 const app = new FalconFrame();
 app.setOrigin("*");
@@ -29,15 +30,13 @@ if (httpEnabled) {
 	httpServer.keepAliveTimeout = keepAliveTimeout;
 	httpServer.headersTimeout = keepAliveTimeout + 5000;
 	httpServer.listen(port, () => {
-		console.log(`HTTP server started on port ${port}`);
+		logger.info(`HTTP server started on port ${port}`);
 	});
 }
 
 if (certPath && keyPath) {
 	if (!existsSync(certPath) || !existsSync(keyPath)) {
-		console.warn(
-			`SSL_CERT or SSL_KEY file not found, HTTPS server not started`,
-		);
+		logger.warn(`SSL_CERT or SSL_KEY file not found, HTTPS server not started`);
 	} else {
 		const sslPort = +process.env.SSL_PORT || port + 1;
 		const sslOpts: {
@@ -59,13 +58,13 @@ if (certPath && keyPath) {
 		httpsServer.headersTimeout = keepAliveTimeout + 5000;
 		httpsServer.listen(sslPort, () => {
 			const proto = caPath ? " (CA)" : "";
-			console.log(`HTTPS${proto} server started on port ${sslPort}`);
+			logger.info(`HTTPS${proto} server started on port ${sslPort}`);
 		});
 	}
 }
 
 if (!httpEnabled && !(certPath && keyPath)) {
-	console.warn(
+	logger.warn(
 		"No server started - HTTP is disabled and no SSL cert/key configured",
 	);
 }

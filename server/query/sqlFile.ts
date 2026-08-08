@@ -1,6 +1,7 @@
 import { Router } from "@wxn0brp/falcon-frame";
 import { runtime_dir } from "../init/vars";
 import { isPathSafe } from "../utils/path";
+import logger from "../utils/logger";
 import { checkPermission } from "../utils/perm";
 import { SQLFileCreator } from "../utils/sqlFileExport";
 import sqlSplitter from "../utils/sqlFileImport";
@@ -78,7 +79,7 @@ router.post("/import", async (req, res) => {
 			results,
 		});
 	} catch (err) {
-		console.error(err);
+		logger.error(err);
 		return res.status(500).json({
 			err: true,
 			msg: err.message,
@@ -133,7 +134,7 @@ router.post("/export", async (req, res) => {
 			result,
 		});
 	} catch (err) {
-		console.error(err);
+		logger.error(err);
 		return res.status(500).json({
 			err: true,
 			msg: err.message,

@@ -1,9 +1,10 @@
 import { Router } from "@wxn0brp/falcon-frame";
+import { runtime_dir } from "../init/vars";
 import { parseCSV } from "../utils/csvParser";
 import { isPathSafe } from "../utils/path";
+import logger from "../utils/logger";
 import { checkPermission } from "../utils/perm";
 import { getDb } from "./query/utils";
-import { runtime_dir } from "../init/vars";
 
 const router = new Router();
 
@@ -68,7 +69,7 @@ router.post("/import", async (req, res) => {
 			results,
 		});
 	} catch (err) {
-		console.error(err);
+		logger.error(err);
 		return res.status(500).json({
 			err: true,
 			msg: err.message,
@@ -136,7 +137,7 @@ router.post("/export", async (req, res) => {
 			result,
 		});
 	} catch (err) {
-		console.error(err);
+		logger.error(err);
 		return res.status(500).json({
 			err: true,
 			msg: err.message,

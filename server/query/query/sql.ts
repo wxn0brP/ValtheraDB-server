@@ -2,6 +2,7 @@ import { ValtheraDbParsers } from "@wxn0brp/db-string-query";
 import { RouteHandler } from "@wxn0brp/falcon-frame";
 import { runtime_dir } from "../../init/vars";
 import { isPathSafe } from "../../utils/path";
+import logger from "../../utils/logger";
 import { checkPermission } from "../../utils/perm";
 import { getDb } from "./utils";
 
@@ -100,7 +101,7 @@ export const sqlProxy: RouteHandler = async (req, res) => {
 			},
 		};
 	} catch (err) {
-		console.error(err);
+		logger.error(err);
 		return res.status(500).json({
 			err: true,
 			msg: err.message,

@@ -8,6 +8,7 @@ For more details, visit [this link](https://github.com/wxn0brP/ValtheraDB).
 - Built on top of the @wxn0brp/db library.
 - Simple configuration with a `.env` file.
 - Management and server control commands included.
+- Configurable audit logging for security and compliance.
 
 ## Installation 
 
