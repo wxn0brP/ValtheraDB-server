@@ -1,8 +1,25 @@
 import { Router } from "@wxn0brp/falcon-frame";
+import { PluginSystem } from "@wxn0brp/falcon-frame-plugin";
+import { createRateLimiterPlugin } from "@wxn0brp/falcon-frame-plugin/plugins/rateLimit";
 import { authMiddleware, loginFunction } from "../auth/auth";
 import { dataCenter } from "../init/initDataBases";
 
+const onceLimiter = new PluginSystem();
+onceLimiter.register(
+	createRateLimiterPlugin({
+		maxRequests: parseInt(process.env.RATE_LIMIT_ONCE_MAX) || 5,
+		windowMs: parseInt(process.env.RATE_LIMIT_ONCE_WINDOW) || 60_000,
+		onLimitReached: (req, res) => {
+			res.status(429).json({
+				err: true,
+				msg: "Too many requests",
+			});
+		},
+	}),
+);
+
 export const onceRouter = new Router();
+onceRouter.use(onceLimiter);
 
 onceRouter.post("/login", async (req, res) => {
 	const { login, password, time } = req.body;

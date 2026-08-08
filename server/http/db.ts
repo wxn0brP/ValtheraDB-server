@@ -1,4 +1,6 @@
 import { Router } from "@wxn0brp/falcon-frame";
+import { PluginSystem } from "@wxn0brp/falcon-frame-plugin";
+import { createRateLimiterPlugin } from "@wxn0brp/falcon-frame-plugin/plugins/rateLimit";
 import { authMiddleware } from "../auth/auth";
 import csvRouter from "../query/csvFile";
 import dbRouter, { rootRouter } from "../query/db";
@@ -7,7 +9,22 @@ import { relationRouter } from "../query/relation";
 import restRouter from "../query/rest";
 import sqlRouter from "../query/sqlFile";
 
+const apiLimiter = new PluginSystem();
+apiLimiter.register(
+	createRateLimiterPlugin({
+		maxRequests: parseInt(process.env.RATE_LIMIT_API_MAX) || 100,
+		windowMs: parseInt(process.env.RATE_LIMIT_API_WINDOW) || 60_000,
+		onLimitReached: (req, res) => {
+			res.status(429).json({
+				err: true,
+				msg: "Too many requests",
+			});
+		},
+	}),
+);
+
 export const apiRouter = new Router();
+apiRouter.use(apiLimiter.getRouteHandler());
 apiRouter.use(authMiddleware);
 apiRouter.use((req, res, next) => {
 	res.setHeader("Connection", "keep-alive");
