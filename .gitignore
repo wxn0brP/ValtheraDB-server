@@ -10,3 +10,4 @@ volumes
 .vscode
 .suglite_history
 .http
+logs
