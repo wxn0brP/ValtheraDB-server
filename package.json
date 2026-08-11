@@ -21,11 +21,11 @@
     "type": "module",
     "dependencies": {
         "@wxn0brp/ac": "^0.1.0",
-        "@wxn0brp/db": "^0.112.0",
+        "@wxn0brp/db": "^0.112.1",
         "@wxn0brp/db-core": "^0.11.6",
         "@wxn0brp/db-storage-dir": "^0.111.2",
         "@wxn0brp/db-string-query": "^0.110.0",
-        "@wxn0brp/falcon-frame": "^0.9.0",
+        "@wxn0brp/falcon-frame": "^0.9.2",
         "@wxn0brp/falcon-frame-plugin": "^0.0.6",
         "@wxn0brp/gate-warden": "^0.6.2",
         "@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",
