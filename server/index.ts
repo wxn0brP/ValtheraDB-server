@@ -6,7 +6,7 @@ import logger from "./utils/logger";
 configDotenv({
 	quiet: true,
 });
-await import("./init/initDataBases");
+await import("./init/dbWatch");
 await initKeys();
 
 logger.info("Runtime dir:", runtime_dir);
