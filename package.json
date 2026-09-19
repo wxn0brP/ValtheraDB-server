@@ -27,7 +27,7 @@
         "@wxn0brp/db-string-query": "^0.120.0",
         "@wxn0brp/falcon-frame": "^0.9.3",
         "@wxn0brp/falcon-frame-plugin": "^0.0.6",
-        "@wxn0brp/gate-warden": "^0.7.0",
+        "@wxn0brp/gate-warden": "^0.7.1",
         "@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",
         "@wxn0brp/wts-run-fn": "github:wxn0brp/ts-shared#dist-run-fn",
         "commander": "^15.0.0",

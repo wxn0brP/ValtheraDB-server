@@ -78,11 +78,8 @@ export async function resolveUserId(idOrLogin: string) {
 }
 
 export async function resolveRoleId(idOrName: string) {
-	try {
-		return await wardenMgmt.changeRoleNameToId(idOrName);
-	} catch {
-		return idOrName;
-	}
+	const id = await wardenMgmt.role.findByName(idOrName);
+	return id || idOrName;
 }
 
 export async function addUserAccess(login: string, password: string = "") {

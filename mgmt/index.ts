@@ -113,21 +113,30 @@ db.command("create <dbName> [login] [password] [permissions...]")
 		const userId = await resolveUserId(login);
 
 		const roleId = `${dbName}-access`;
-		try {
-			await wardenMgmt.addRole({
+		const roleExists = await wardenMgmt.role.exists(roleId);
+		if (!roleExists) {
+			await wardenMgmt.role.add({
 				_id: roleId,
 				name: `${dbName} access`,
 			});
 			console.log(`Role "${roleId}" created`);
-		} catch {
+		} else {
 			console.log(`Role "${roleId}" already exists`);
 		}
 
 		const permValue = parsePermission(perm);
-		await wardenMgmt.addRBACRule(roleId, dbName, permValue);
-		console.log(
-			`Permissions "${perm}" (${permValue}) granted on "${dbName}" to role "${roleId}"`,
-		);
+		const permExists = await wardenMgmt.rbac.get(roleId, dbName);
+		if (!permExists) {
+			await wardenMgmt.rbac.add(roleId, dbName, permValue);
+			console.log(
+				`Permissions "${perm}" (${permValue}) granted on "${dbName}" to role "${roleId}"`,
+			);
+		} else {
+			await wardenMgmt.rbac.update(roleId, dbName, permValue);
+			console.log(
+				`Permissions "${perm}" (${permValue}) updated on "${dbName}" to role "${roleId}"`,
+			);
+		}
 
 		await userMgmt.addRoleToUser(userId, roleId);
 		console.log(`User "${login}" assigned to role "${roleId}"`);
@@ -283,7 +292,7 @@ role
 	.command("add <role_id> [name]")
 	.description("Add a role")
 	.action(async (roleId, name) => {
-		const role = await wardenMgmt.addRole({
+		const role = await wardenMgmt.role.add({
 			_id: roleId,
 			name: name || roleId,
 		});
@@ -297,7 +306,7 @@ role
 	.description("Remove a role")
 	.action(async roleIdOrName => {
 		const roleId = await resolveRoleId(roleIdOrName);
-		const role = await wardenMgmt.removeRole(roleId);
+		const role = await wardenMgmt.role.remove(roleId);
 		console.log(role ? "Done" : "Role not found");
 		process.exit(0);
 	});
@@ -337,11 +346,7 @@ role
 	.description("Grant entity access to a role")
 	.action(async (roleIdOrName, entityId, permissions) => {
 		const roleId = await resolveRoleId(roleIdOrName);
-		await wardenMgmt.addRBACRule(
-			roleId,
-			entityId,
-			parsePermission(permissions),
-		);
+		await wardenMgmt.rbac.add(roleId, entityId, parsePermission(permissions));
 		console.log("Done");
 		process.exit(0);
 	});
@@ -351,7 +356,7 @@ role
 	.description("Revoke entity access from a role")
 	.action(async (roleIdOrName, entityId) => {
 		const roleId = await resolveRoleId(roleIdOrName);
-		const rule = await wardenMgmt.removeRBACRule(roleId, entityId);
+		const rule = await wardenMgmt.rbac.remove(roleId, entityId);
 		console.log(rule ? "Done" : "Rule not found");
 		process.exit(0);
 	});
@@ -363,7 +368,7 @@ acl
 	.description("Grant direct ACL access to a user")
 	.action(async (entityId, userIdOrLogin, permissions) => {
 		const userId = await resolveUserId(userIdOrLogin);
-		await wardenMgmt.addACLRule(entityId, parsePermission(permissions), userId);
+		await wardenMgmt.acl.add(entityId, parsePermission(permissions), userId);
 		console.log("Done");
 		process.exit(0);
 	});
@@ -377,7 +382,7 @@ acl
 		const userId = userIdOrLogin
 			? await resolveUserId(userIdOrLogin)
 			: undefined;
-		const rule = await wardenMgmt.removeACLRule(entityId, userId);
+		const rule = await wardenMgmt.acl.remove(entityId, userId);
 		console.log(rule ? "Done" : "Rule not found");
 		process.exit(0);
 	});
