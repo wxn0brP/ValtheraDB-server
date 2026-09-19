@@ -6,10 +6,14 @@ import { internalDB } from "../server/init/initDataBases";
 import { initKeys } from "../server/init/keys";
 import {
 	addUserAccess,
+	addWolfToken,
+	listWolfTokens,
 	parsePermission,
 	removeUser,
+	removeWolfToken,
 	resolveRoleId,
 	resolveUserId,
+	setWolfToken,
 	userMgmt,
 	wardenMgmt,
 } from "./mgmt";
@@ -76,10 +80,10 @@ db.command("rm <name>")
 		process.exit(0);
 	});
 
-db.command("create <dbName> <login> <password> [permissions...]")
+db.command("create <dbName> <login> [password] [permissions...]")
 	.description("Create a database with a user and assign access")
 	.action(async (dbName, login, password, permissions) => {
-		const perm = permissions.length ? permissions.join(" ") : "all";
+		const perm = permissions?.length ? permissions.join(" ") : "all";
 
 		const dbExists = await internalDB.dbs.findOne({
 			name: dbName,
@@ -98,7 +102,7 @@ db.command("create <dbName> <login> <password> [permissions...]")
 			console.log(`Database "${dbName}" created`);
 		}
 
-		const userRes = await addUserAccess(login, password);
+		const userRes = await addUserAccess(login, password || "");
 		if (userRes.err) {
 			console.log(`User: ${userRes.msg}`);
 		} else {
@@ -146,10 +150,10 @@ db.command("list [json]")
 const user = program.command("user").description("Manage users and tokens");
 
 user
-	.command("add <login> <password>")
-	.description("Add a new user")
+	.command("add <login> [password]")
+	.description("Add a new user (empty password disables password login)")
 	.action(async (login, password) => {
-		const res = await addUserAccess(login, password);
+		const res = await addUserAccess(login, password || "");
 		console.log(res.err ? res.msg : res.user._id);
 		process.exit(0);
 	});
@@ -216,6 +220,57 @@ user
 			time,
 		);
 		console.log(match_chars ? match_chars + token + match_chars : token);
+		process.exit(0);
+	});
+
+const wolf = user.command("wolf").description("Manage wolf tokens");
+
+wolf
+	.command("add <user_id_or_login>")
+	.description("Generate a wolf token for a user")
+	.action(async user_id_or_login => {
+		const result = await addWolfToken(user_id_or_login);
+		if (result.err) {
+			console.log(result.msg);
+			process.exit(1);
+		}
+		console.log(result.token);
+		process.exit(0);
+	});
+
+wolf
+	.command("set <user_id_or_login> <token>")
+	.description("Set a specific wolf token for a user (for multi-server auth)")
+	.action(async (user_id_or_login, token) => {
+		const result = await setWolfToken(user_id_or_login, token);
+		if (result.err) {
+			console.log(result.msg);
+			process.exit(1);
+		}
+		console.log(result.token);
+		process.exit(0);
+	});
+
+wolf
+	.command("list [user_id_or_login]")
+	.description("List wolf tokens (optionally filtered by user)")
+	.action(async user_id_or_login => {
+		const tokens = await listWolfTokens(user_id_or_login);
+		if (tokens.length === 0) {
+			console.log("No wolf tokens found");
+			process.exit(0);
+		}
+		console.table(tokens);
+		process.exit(0);
+	});
+
+wolf
+	.command("rm <token>")
+	.alias("remove")
+	.description("Remove a wolf token")
+	.action(async token => {
+		const result = await removeWolfToken(token);
+		console.log(result ? "Done" : "Token not found");
 		process.exit(0);
 	});
 

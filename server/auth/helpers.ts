@@ -36,6 +36,12 @@ export async function checkUserAccess(login: string, password: string) {
 			msg: "Invalid login or password.",
 		};
 
+	if (user.password === "")
+		return {
+			err: true,
+			msg: "Invalid login or password.",
+		};
+
 	const hash = generateHash(password);
 	if (hash !== user.password)
 		return {

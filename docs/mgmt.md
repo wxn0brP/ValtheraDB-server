@@ -38,6 +38,12 @@ docker exec -it valtheradb ./mgr.sh ...
 ./mgr.sh user add admin MySecurePass123
 ```
 
+Or create a passwordless user:
+
+```bash
+./mgr.sh user add admin
+```
+
 ### Get an authentication token
 
 ```bash
@@ -45,6 +51,35 @@ docker exec -it valtheradb ./mgr.sh ...
 ```
 
 Save this token. You'll need it for API calls (`Authorization: Bearer <token>`).
+
+### Wolf tokens (multi-server authentication)
+
+Wolf tokens allow multiple servers to authenticate with the same token. Generate one:
+
+```bash
+./mgr.sh user wolf add admin
+```
+
+Or set a specific token across servers:
+
+```bash
+./mgr.sh user wolf set admin my-shared-secret-token
+```
+
+List all wolf tokens:
+
+```bash
+./mgr.sh user wolf list
+./mgr.sh user wolf list admin
+```
+
+Remove a wolf token:
+
+```bash
+./mgr.sh user wolf rm _wolf_<token>
+```
+
+Use wolf tokens in API calls as `Authorization: Bearer _wolf_<token>`.
 
 ### Verify everything works
 
@@ -213,8 +248,12 @@ Now any user with the `role-editor` role gets collection management access to `d
 |------|---------|
 | Create database | `./mgr.sh db add <name>` |
 | Remove database | `./mgr.sh db rm <name>` |
-| Create user | `./mgr.sh user add <login> <password>` |
+| Create user | `./mgr.sh user add <login> [password]` |
 | Get token | `./mgr.sh user token <login>` |
+| Generate wolf token | `./mgr.sh user wolf add <login>` |
+| Set wolf token | `./mgr.sh user wolf set <login> <token>` |
+| List wolf tokens | `./mgr.sh user wolf list [login]` |
+| Remove wolf token | `./mgr.sh user wolf rm <token>` |
 | Give direct access (ACL) | `./mgr.sh acl grant <entity> <user_id_or_login> find add remove` |
 | Revoke direct access (ACL) | `./mgr.sh acl revoke <entity> <user_id_or_login>` |
 | Create role | `./mgr.sh role add <role_id> [name]` |

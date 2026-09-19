@@ -5,9 +5,42 @@ All authenticated endpoints accept the token via:
 - **Authorization header**: `Authorization: Bearer <token>`
 - **Request body**: `auth` field in JSON body
 
+## Token types
+
+### JWT tokens
+
+Standard tokens obtained via `/login` or `./mgr.sh user token`. These are server-specific and expire based on configuration.
+
+### Wolf tokens
+
+Wolf tokens allow multiple servers to share the same authentication token. Format: `_wolf_<token>`.
+
+Create wolf tokens via CLI:
+
+```bash
+./mgr.sh user wolf add admin
+./mgr.sh user wolf set admin my-shared-secret
+```
+
+Use them in API calls:
+
+```javascript
+fetch('http://localhost:14785/getDbList', {
+  method: 'POST',
+  headers: { 'Authorization': 'Bearer _wolf_<token>' }
+});
+```
+
+Passwordless users (created without a password) cannot use `/login` - obtain tokens via CLI instead:
+
+```bash
+./mgr.sh user token admin          # JWT token
+./mgr.sh user wolf add admin       # wolf token
+```
+
 ### `POST /login`
 
-Authenticates a user and returns an access token.
+Authenticates a user and returns an access token. Users without a password cannot use this endpoint.
 
 **Body:**
 

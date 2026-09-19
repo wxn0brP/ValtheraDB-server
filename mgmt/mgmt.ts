@@ -1,4 +1,5 @@
 import { UserManager, WardenManager } from "@wxn0brp/gate-warden";
+import crypto from "crypto";
 import { generateHash } from "../server/auth/helpers";
 import { internalDB } from "../server/init/initDataBases";
 
@@ -84,7 +85,7 @@ export async function resolveRoleId(idOrName: string) {
 	}
 }
 
-export async function addUserAccess(login: string, password: string) {
+export async function addUserAccess(login: string, password: string = "") {
 	if (!/^[a-zA-Z0-9]+$/.test(login))
 		return {
 			err: true,
@@ -95,7 +96,7 @@ export async function addUserAccess(login: string, password: string) {
 			err: true,
 			msg: "Login must be between 3 and 10 characters.",
 		};
-	if (password.length < 8 || password.length > 300)
+	if (password && (password.length < 8 || password.length > 300))
 		return {
 			err: true,
 			msg: "Password must be between 8 and 300 characters.",
@@ -110,7 +111,7 @@ export async function addUserAccess(login: string, password: string) {
 			msg: "Login already exists.",
 		};
 
-	password = generateHash(password);
+	password = password ? generateHash(password) : "";
 
 	const user = await internalDB.user.add({
 		login,
@@ -142,4 +143,88 @@ export async function removeUser(idOrLogin: string) {
 	});
 	await userMgmt.deleteUser(user._id);
 	return true;
+}
+
+export async function addWolfToken(userId: string) {
+	const user = await internalDB.user.findOne({
+		$or: [
+			{
+				_id: userId,
+			},
+			{
+				login: userId,
+			},
+		],
+	});
+	if (!user)
+		return {
+			err: true,
+			msg: "User not found.",
+		};
+
+	const token = crypto.randomBytes(32).toString("hex");
+	await internalDB.wolf.add({
+		_id: user._id,
+		token,
+	});
+	return {
+		err: false,
+		token: `_wolf_${token}`,
+	};
+}
+
+export async function setWolfToken(userId: string, token: string) {
+	const user = await internalDB.user.findOne({
+		$or: [
+			{
+				_id: userId,
+			},
+			{
+				login: userId,
+			},
+		],
+	});
+	if (!user)
+		return {
+			err: true,
+			msg: "User not found.",
+		};
+
+	const cleanToken = token.startsWith("_wolf_") ? token.slice(6) : token;
+	await internalDB.wolf.add({
+		_id: user._id,
+		token: cleanToken,
+	});
+	return {
+		err: false,
+		token: `_wolf_${cleanToken}`,
+	};
+}
+
+export async function listWolfTokens(userId?: string) {
+	if (userId) {
+		const user = await internalDB.user.findOne({
+			$or: [
+				{
+					_id: userId,
+				},
+				{
+					login: userId,
+				},
+			],
+		});
+		if (!user) return [];
+		return await internalDB.wolf.find({
+			_id: user._id,
+		});
+	}
+	return await internalDB.wolf.find({});
+}
+
+export async function removeWolfToken(token: string) {
+	const cleanToken = token.startsWith("_wolf_") ? token.slice(6) : token;
+	const result = await internalDB.wolf.removeOne({
+		token: cleanToken,
+	});
+	return !!result;
 }
