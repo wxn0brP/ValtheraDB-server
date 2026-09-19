@@ -80,10 +80,11 @@ db.command("rm <name>")
 		process.exit(0);
 	});
 
-db.command("create <dbName> <login> [password] [permissions...]")
+db.command("create <dbName> [login] [password] [permissions...]")
 	.description("Create a database with a user and assign access")
 	.action(async (dbName, login, password, permissions) => {
 		const perm = permissions?.length ? permissions.join(" ") : "all";
+		if (!login) login = dbName;
 
 		const dbExists = await internalDB.dbs.findOne({
 			name: dbName,
