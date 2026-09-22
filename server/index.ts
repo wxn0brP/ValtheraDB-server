@@ -1,11 +1,11 @@
-import { configDotenv } from "dotenv";
+import { loadEnvFile } from "process";
 import { initKeys } from "./init/keys";
 import { runtime_dir } from "./init/vars";
 import logger from "./utils/logger";
 
-configDotenv({
-	quiet: true,
-});
+try {
+	loadEnvFile();
+} catch {}
 await import("./init/dbWatch");
 await initKeys();
 

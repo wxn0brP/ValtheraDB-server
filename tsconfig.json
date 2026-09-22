@@ -7,7 +7,10 @@
         "esModuleInterop": true,
         "allowArbitraryExtensions": true,
         "skipLibCheck": true,
-        "strict": false
+        "strict": false,
+        "types": [
+            "bun-types"
+        ]
     },
     "include": [
         "server",

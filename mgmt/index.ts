@@ -1,6 +1,6 @@
 import { Command } from "commander";
-import { configDotenv } from "dotenv";
 import fs from "fs";
+import { loadEnvFile } from "process";
 import { generateToken } from "../server/auth/helpers";
 import { internalDB } from "../server/init/initDataBases";
 import { initKeys } from "../server/init/keys";
@@ -18,9 +18,9 @@ import {
 	wardenMgmt,
 } from "./mgmt";
 
-configDotenv({
-	quiet: true,
-});
+try {
+	loadEnvFile();
+} catch {}
 
 const program = new Command();
 const version = JSON.parse(fs.readFileSync("./package.json", "utf-8")).version;

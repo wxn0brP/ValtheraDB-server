@@ -30,11 +30,10 @@
         "@wxn0brp/gate-warden": "^0.7.1",
         "@wxn0brp/wts-jwt": "github:wxn0brP/ts-shared#dist-jwt",
         "@wxn0brp/wts-run-fn": "github:wxn0brp/ts-shared#dist-run-fn",
-        "commander": "^15.0.0",
-        "dotenv": "^18.0.1"
+        "commander": "^15.0.0"
     },
     "devDependencies": {
-        "@types/node": "*",
+        "@types/bun": "*",
         "@wxn0brp/biome": "*",
         "tsc-alias": "^1",
         "typescript": "^7"
