@@ -58,6 +58,12 @@ export enum Codes {
 	INVALID_COLLECTION = "invalid collection",
 }
 
+const collectionOp = new Set([
+	"ensureCollection",
+	"issetCollection",
+	"removeCollection",
+]);
+
 export async function dbLogic(serverQuery: Query): Promise<Response> {
 	const { type, dbName, userId, query, keys } = serverQuery;
 	const res = new Response();
@@ -88,8 +94,12 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 		if (!isPathSafe(runtime_dir, dbDir, query.collection))
 			return res.e(Codes.INVALID_COLLECTION);
 
-		const result = await db[type](parsedVQuery);
+		if (collectionOp.has(type)) {
+			const result = await db[type](parsedVQuery.collection);
+			return res.r(result);
+		}
 
+		const result = await db[type](parsedVQuery);
 		return res.r(result);
 	} catch (err) {
 		logger.error(err);
