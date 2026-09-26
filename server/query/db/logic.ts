@@ -83,13 +83,9 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 		if (typeof query !== "object") return res.e(Codes.QUERY_REQ_OBJ);
 		if (!query.collection) return res.e(Codes.COLLECTION_REQ);
 
-		const parsedParams = deserializeFunctions(query, keys || []);
-		const parsedVQuery = parsedParams as VQuery;
+		const parsedVQuery = deserializeFunctions(query, keys || []) as VQuery;
 
-		const collection = parsedVQuery.collection as string;
-		if (!collection) return res.e(Codes.COLLECTION_REQ);
-
-		if (!isPathSafe(runtime_dir, dbDir, collection))
+		if (!isPathSafe(runtime_dir, dbDir, query.collection))
 			return res.e(Codes.INVALID_COLLECTION);
 
 		const result = await db[type](parsedVQuery);
