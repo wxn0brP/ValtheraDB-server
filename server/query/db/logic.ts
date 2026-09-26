@@ -83,12 +83,7 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 		if (typeof query !== "object") return res.e(Codes.QUERY_REQ_OBJ);
 		if (!query.collection) return res.e(Codes.COLLECTION_REQ);
 
-		const parsedParams = deserializeFunctions(
-			[
-				query,
-			],
-			keys || [],
-		);
+		const parsedParams = deserializeFunctions(query, keys || []);
 		const parsedVQuery = parsedParams[0] as VQuery;
 
 		const collection = parsedVQuery.collection as string;
