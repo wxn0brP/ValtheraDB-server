@@ -52,13 +52,14 @@ export enum Codes {
 	TYPE_REQ = "type is required",
 	INVALID_TYPE = "invalid type",
 	ACCESS_DENIED = "access denied",
-	PARAMS_REQ = "params is required",
+	QUERY_REQ = "query is required",
+	QUERY_REQ_OBJ = "query must be an object",
 	COLLECTION_REQ = "collection is required",
 	INVALID_COLLECTION = "invalid collection",
 }
 
-export async function dbLogic(query: Query): Promise<Response> {
-	const { type, dbName, userId, query: params, keys } = query;
+export async function dbLogic(serverQuery: Query): Promise<Response> {
+	const { type, dbName, userId, query, keys } = serverQuery;
 	const res = new Response();
 
 	const dbObj = dataCenter[dbName];
@@ -78,12 +79,13 @@ export async function dbLogic(query: Query): Promise<Response> {
 			return res.r(collections);
 		}
 
-		if (!params || typeof params !== "object" || !params.collection)
-			return res.e(Codes.PARAMS_REQ);
+		if (!query) return res.e(Codes.QUERY_REQ);
+		if (typeof query !== "object") return res.e(Codes.QUERY_REQ_OBJ);
+		if (!query.collection) return res.e(Codes.COLLECTION_REQ);
 
 		const parsedParams = deserializeFunctions(
 			[
-				params,
+				query,
 			],
 			keys || [],
 		);
