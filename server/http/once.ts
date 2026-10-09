@@ -1,21 +1,14 @@
-import { FFRequest, Router } from "@wxn0brp/falcon-frame";
+import { Router } from "@wxn0brp/falcon-frame";
 import { PluginSystem } from "@wxn0brp/falcon-frame-plugin";
 import { createRateLimiterPlugin } from "@wxn0brp/falcon-frame-plugin/plugins/rateLimit";
 import { authMiddleware, loginFunction } from "../auth/auth";
 import { dataCenter } from "../init/initDataBases";
 import { audit, auditConfig } from "../utils/audit";
 
-function getClientIp(req: FFRequest): string {
-	const forwarded = req.headers["x-forwarded-for"];
-	if (Array.isArray(forwarded)) return forwarded[0];
-	if (typeof forwarded === "string") return forwarded.split(",")[0].trim();
-	return req.socket?.remoteAddress || "";
-}
-
 const onceLimiter = new PluginSystem();
 onceLimiter.register(
 	createRateLimiterPlugin({
-		maxRequests: parseInt(process.env.RATE_LIMIT_ONCE_MAX) || 5,
+		maxRequests: parseInt(process.env.RATE_LIMIT_ONCE_MAX) || 10,
 		windowMs: parseInt(process.env.RATE_LIMIT_ONCE_WINDOW) || 60_000,
 		onLimitReached: (req, res) => {
 			res.status(429).json({
@@ -36,7 +29,7 @@ onceRouter.post("/login", async (req, res) => {
 			action: "POST /login",
 			result: "error",
 			message: "Missing credentials",
-			ip: auditConfig.includeIp ? getClientIp(req) : undefined,
+			ip: auditConfig.includeIp ? req.ip : undefined,
 		});
 		return res.status(400).json({
 			err: true,
@@ -55,7 +48,7 @@ onceRouter.post("/login", async (req, res) => {
 			action: "POST /login",
 			result: "error",
 			message: "Invalid time parameter",
-			ip: auditConfig.includeIp ? getClientIp(req) : undefined,
+			ip: auditConfig.includeIp ? req.ip : undefined,
 		});
 		return res.status(400).json({
 			err: true,

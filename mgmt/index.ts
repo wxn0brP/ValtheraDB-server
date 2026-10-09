@@ -387,4 +387,74 @@ acl
 		process.exit(0);
 	});
 
+program
+	.command("status")
+	.description("Show configuration overview")
+	.action(async () => {
+		const [dbs, users, gwUsers, tokens, wolfTokens, roles] = await Promise.all([
+			internalDB.dbs.find(),
+			internalDB.user.find(),
+			internalDB.users.find(),
+			internalDB.token.find(),
+			internalDB.wolf.find(),
+			wardenMgmt.role.list(),
+		]);
+
+		const roleNameMap = new Map(roles.map(r => [r._id, r.name]));
+
+		console.log("=== STATUS OVERVIEW ===\n");
+
+		if (dbs.length > 0) console.log(`Databases: ${dbs.length}`);
+		if (users.length > 0) console.log(`Users: ${users.length}`);
+		if (roles.length > 0) console.log(`Roles: ${roles.length}`);
+		if (tokens.length > 0) console.log(`JWT Tokens: ${tokens.length}`);
+		if (wolfTokens.length > 0) console.log(`Wolf Tokens: ${wolfTokens.length}`);
+
+		console.log("\n--- Databases ---");
+		if (dbs.length === 0) {
+			console.log("- (none)");
+		} else {
+			for (const db of dbs) {
+				console.log(`- ${db.name}`);
+			}
+		}
+
+		console.log("\n--- Users ---");
+		if (users.length === 0) {
+			console.log("- (none)");
+		} else {
+			for (const user of users) {
+				const gwUser = gwUsers.find(g => g._id === user._id);
+				const userWolfTokens = wolfTokens.filter(w => w._id === user._id);
+				const userTokens = tokens.filter(t => t._id === user._id);
+
+				const roleNames = (gwUser?.roles || [])
+					.map(id => roleNameMap.get(id) || id)
+					.join(", ");
+
+				console.log(`- ${user.login}`);
+				if (roleNames) console.log(`  Roles: ${roleNames}`);
+				if (userWolfTokens.length > 0) console.log(`  Wolf tokens: ${userWolfTokens.length}`);
+				if (userTokens.length > 0) console.log(`  JWT tokens: ${userTokens.length}`);
+			}
+		}
+
+		console.log("\n--- Roles ---");
+		if (roles.length === 0) {
+			console.log("- (none)");
+		} else {
+			for (const role of roles) {
+				const rbacRules = await wardenMgmt.rbac.list(role._id);
+				console.log(`- ${role.name}`);
+				if (rbacRules.length > 0) {
+					console.log("  Permissions:");
+					for (const rule of rbacRules) {
+						console.log(`    - ${rule._id}: ${rule.p}`);
+					}
+				}
+			}
+		}
+		process.exit(0);
+	});
+
 program.parse(process.argv);

@@ -9,10 +9,8 @@ import logger from "../utils/logger";
 const app = new FalconFrame();
 app.setOrigin("*");
 app.get("/", () => "Server is running.");
-app.use(onceRouter);
-
 app.static("/gui", "./gui");
-app.get("/gui", (req, res) => res.redirect("/gui/"));
+app.use(onceRouter);
 
 app.use(apiRouter);
 
