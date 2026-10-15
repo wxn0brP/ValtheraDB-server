@@ -1,3 +1,4 @@
+import { isValtheraError } from "@wxn0brp/db-core/errors";
 import { VQuery } from "@wxn0brp/db-core/types/query";
 import { FFResponse } from "@wxn0brp/falcon-frame";
 import { deserializeFunctions } from "@wxn0brp/wts-run-fn";
@@ -20,8 +21,11 @@ export interface Query {
 export class Response {
 	err: boolean;
 	result: any;
-	msg: Codes;
+	msg: Codes | string;
 	code?: number;
+	errorCode?: string;
+	suggestion?: string;
+	context?: Record<string, unknown>;
 
 	e(msg: Codes, code: number = 400) {
 		this.err = true;
@@ -36,12 +40,27 @@ export class Response {
 		return this;
 	}
 
+	error(err: unknown, code: number = 500) {
+		this.err = true;
+		this.msg = (err as any)?.message ?? String(err);
+		this.code = code;
+		if (isValtheraError(err)) {
+			this.errorCode = err.code;
+			this.suggestion = err.suggestion;
+			this.context = err.context;
+		}
+		return this;
+	}
+
 	ff(res: FFResponse) {
 		const response: any = {
 			err: this.err,
 		};
 		if (this.code) res.status(this.code);
 		if (this.msg) response.msg = this.msg;
+		if (this.errorCode) response.code = this.errorCode;
+		if (this.suggestion) response.suggestion = this.suggestion;
+		if (this.context) response.context = this.context;
 		if (this.result !== undefined) response.result = this.result;
 		return res.json(response);
 	}
@@ -85,6 +104,11 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 			return res.r(collections);
 		}
 
+		if (type === "capabilities") {
+			const caps = await db.capabilities();
+			return res.r(caps);
+		}
+
 		if (!query) return res.e(Codes.QUERY_REQ);
 		if (typeof query !== "object") return res.e(Codes.QUERY_REQ_OBJ);
 		if (!query.collection) return res.e(Codes.COLLECTION_REQ);
@@ -103,6 +127,6 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 		return res.r(result);
 	} catch (err) {
 		logger.error(err);
-		return res.e(err.message, 500);
+		return res.error(err);
 	}
 }
