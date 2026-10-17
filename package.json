@@ -22,7 +22,7 @@
     "dependencies": {
         "@wxn0brp/ac": "^0.1.0",
         "@wxn0brp/db": "^0.120.4",
-        "@wxn0brp/db-core": "^0.12.10",
+        "@wxn0brp/db-core": "^0.12.11",
         "@wxn0brp/db-storage-dir": "^0.120.6",
         "@wxn0brp/db-string-query": "^0.120.1",
         "@wxn0brp/falcon-frame": "^0.9.7",

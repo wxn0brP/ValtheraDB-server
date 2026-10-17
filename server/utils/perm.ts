@@ -44,3 +44,22 @@ export async function checkPermission(
 
 	return true;
 }
+
+/**
+ * Whether the user can perform any CRUD operation on the data center.
+ * Used to gate opening a transaction without requiring a specific operation bit.
+ */
+export async function checkAnyAccess(
+	user: Id,
+	dataCenter: string,
+): Promise<boolean> {
+	for (const op of [
+		"find",
+		"add",
+		"update",
+		"remove",
+	]) {
+		if (await checkPermission(user, op, dataCenter)) return true;
+	}
+	return false;
+}

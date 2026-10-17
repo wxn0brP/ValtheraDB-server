@@ -1,4 +1,5 @@
 import { isValtheraError } from "@wxn0brp/db-core/errors";
+import type { AdapterCapabilities } from "@wxn0brp/db-core/types/action";
 import { VQuery } from "@wxn0brp/db-core/types/query";
 import { FFResponse } from "@wxn0brp/falcon-frame";
 import { deserializeFunctions } from "@wxn0brp/wts-run-fn";
@@ -6,7 +7,8 @@ import { dataCenter } from "../../init/initDataBases";
 import { runtime_dir } from "../../init/vars";
 import { isPathSafe } from "../../utils/path";
 import logger from "../../utils/logger";
-import { checkPermission } from "../../utils/perm";
+import { checkAnyAccess, checkPermission } from "../../utils/perm";
+import { beginTx, commitTx, getSession, rollbackTx, touch } from "./tx";
 
 export interface Query {
 	type: string;
@@ -75,6 +77,10 @@ export enum Codes {
 	QUERY_REQ_OBJ = "query must be an object",
 	COLLECTION_REQ = "collection is required",
 	INVALID_COLLECTION = "invalid collection",
+	COLLECTIONS_REQ = "collections is required",
+	TRANSACTION_REQ = "transaction is required",
+	INVALID_TRANSACTION = "invalid or expired transaction",
+	COLLECTION_NOT_IN_TRANSACTION = "collection is not part of the transaction",
 }
 
 const collectionOp = new Set([
@@ -82,6 +88,26 @@ const collectionOp = new Set([
 	"issetCollection",
 	"removeCollection",
 ]);
+
+const txControl = new Set([
+	"beginTransaction",
+	"commitTransaction",
+	"rollbackTransaction",
+]);
+
+const SERVER_CAPABILITIES: AdapterCapabilities = {
+	transactions: true,
+	indexes: false,
+	persistent: true,
+};
+
+function intersectCapabilities(caps: AdapterCapabilities) {
+	return {
+		transactions: caps.transactions && SERVER_CAPABILITIES.transactions,
+		indexes: caps.indexes && SERVER_CAPABILITIES.indexes,
+		persistent: caps.persistent && SERVER_CAPABILITIES.persistent,
+	};
+}
 
 export async function dbLogic(serverQuery: Query): Promise<Response> {
 	const { type, dbName, userId, query, keys } = serverQuery;
@@ -91,8 +117,50 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 	if (!dbObj) return res.e(Codes.INVALID_DB);
 	if (!type) return res.e(Codes.TYPE_REQ);
 
+	const { db, dir: dbDir } = dbObj;
+
+	if (txControl.has(type)) {
+		try {
+			if (!(await checkAnyAccess(userId, dbName)))
+				return res.e(Codes.ACCESS_DENIED, 403);
+
+			if (type === "beginTransaction") {
+				const collections = (query as any)?.collections;
+				if (!Array.isArray(collections) || !collections.length)
+					return res.e(Codes.COLLECTIONS_REQ);
+
+				for (const collection of collections) {
+					if (
+						typeof collection !== "string" ||
+						!collection ||
+						!isPathSafe(runtime_dir, dbDir, collection)
+					)
+						return res.e(Codes.INVALID_COLLECTION);
+				}
+
+				const id = await beginTx(db, dbName, userId, collections);
+				return res.r({
+					id,
+				});
+			}
+
+			const id = query?.transaction?.id;
+			if (!id) return res.e(Codes.TRANSACTION_REQ);
+
+			if (type === "commitTransaction") {
+				await commitTx(id, userId, dbName);
+				return res.r(true);
+			}
+
+			await rollbackTx(id, userId, dbName);
+			return res.r(true);
+		} catch (err) {
+			logger.error(err);
+			return res.error(err);
+		}
+	}
+
 	try {
-		const { db, dir: dbDir } = dbObj;
 		if (!db[type] || typeof db[type] !== "function")
 			return res.e(Codes.INVALID_TYPE);
 
@@ -106,7 +174,7 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 
 		if (type === "capabilities") {
 			const caps = await db.capabilities();
-			return res.r(caps);
+			return res.r(intersectCapabilities(caps));
 		}
 
 		if (!query) return res.e(Codes.QUERY_REQ);
@@ -118,13 +186,33 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 		if (!isPathSafe(runtime_dir, dbDir, query.collection))
 			return res.e(Codes.INVALID_COLLECTION);
 
-		if (collectionOp.has(type)) {
-			const result = await db[type](parsedVQuery.collection);
-			return res.r(result);
+		const txId = parsedVQuery?.transaction?.id;
+		if (txId) {
+			const session = getSession(txId);
+			if (!session) return res.e(Codes.INVALID_TRANSACTION);
+			if (session.userId !== userId || session.dbName !== dbName)
+				return res.e(Codes.ACCESS_DENIED, 403);
+			if (!session.collections.has(parsedVQuery.collection))
+				return res.e(Codes.COLLECTION_NOT_IN_TRANSACTION);
+
+			touch(session);
+
+			if (collectionOp.has(type))
+				return res.r(
+					await db.execute(
+						type as any,
+						parsedVQuery.collection,
+						session.handle,
+					),
+				);
+
+			return res.r(await db.execute(type as any, parsedVQuery, session.handle));
 		}
 
-		const result = await db[type](parsedVQuery);
-		return res.r(result);
+		if (collectionOp.has(type))
+			return res.r(await db[type](parsedVQuery.collection));
+
+		return res.r(await db[type](parsedVQuery));
 	} catch (err) {
 		logger.error(err);
 		return res.error(err);
