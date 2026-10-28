@@ -17,12 +17,18 @@ interface WolfToken {
 	token: string;
 }
 
+interface Secret {
+	_id: string;
+	value: string;
+}
+
 export const internalDB = ValtheraCreate<{
 	dbs: DataBaseBuilder;
 	user: ServerUser;
 	users: GWUser;
 	token: Token;
 	wolf: WolfToken;
+	secret: Secret;
 }>(internal_db_dir);
 
 export const dataCenter: Record<

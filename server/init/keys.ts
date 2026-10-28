@@ -2,23 +2,27 @@ import { JwtManager, KeyIndex } from "@wxn0brp/wts-jwt";
 import getSecret from "../vars/secret";
 import { internalDB } from "./initDataBases";
 
-let manager: JwtManager | null = null;
+let manager: Promise<JwtManager> | null = null;
 
 function getJwtManager() {
-	if (!manager) manager = new JwtManager(KeyIndex, getSecret());
+	manager ??= (async () => {
+		const jwt = new JwtManager(KeyIndex, await getSecret());
+		await jwt.init(internalDB);
+		return jwt;
+	})();
 	return manager;
 }
 
 export async function initKeys() {
-	await getJwtManager().init(internalDB);
+	await getJwtManager();
 }
 
 const jwtManager = {
-	create(...args: Parameters<JwtManager["create"]>) {
-		return getJwtManager().create(...args);
+	async create(...args: Parameters<JwtManager["create"]>) {
+		return (await getJwtManager()).create(...args);
 	},
-	decode(...args: Parameters<JwtManager["decode"]>) {
-		return getJwtManager().decode(...args);
+	async decode(...args: Parameters<JwtManager["decode"]>) {
+		return (await getJwtManager()).decode(...args);
 	},
 };
 

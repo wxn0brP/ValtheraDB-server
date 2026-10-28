@@ -1,26 +1,20 @@
 import crypto from "crypto";
-import os from "os";
+import { internalDB } from "../init/initDataBases";
 
-function generateJwtSecret() {
-	const hostname = os.hostname();
-	const cpuModels = os
-		.cpus()
-		.map(cpu => cpu.model)
-		.join("-");
-	const platform = os.platform();
-	const arch = os.arch();
-	const macAddresses = os.networkInterfaces();
+const SECRET_ID = "jwt";
 
-	const macAddress = Object.values(macAddresses)
-		.flat()
-		.filter(iface => iface.mac !== "00:00:00:00:00:00" && !iface.internal)
-		.map(iface => iface.mac)
-		.join("-");
+export default async function getSecret() {
+	if (process.env.JWT) return process.env.JWT;
 
-	const secretData = `${hostname}-${cpuModels}-${platform}-${arch}-${macAddress}`;
-	return crypto.createHash("sha256").update(secretData).digest("hex");
-}
+	const stored = await internalDB.secret.findOne({
+		_id: SECRET_ID,
+	});
+	if (stored?.value) return stored.value;
 
-export default function getSecret() {
-	return process.env.JWT || generateJwtSecret();
+	const secret = crypto.randomBytes(64).toString("hex");
+	await internalDB.secret.add({
+		_id: SECRET_ID,
+		value: secret,
+	});
+	return secret;
 }

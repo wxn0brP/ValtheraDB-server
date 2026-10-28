@@ -26,4 +26,4 @@
 | `AUDIT_INCLUDE_IP` | `true` | Include client IP in audit logs |
 | `AUDIT_INCLUDE_RESULT` | `true` | Include operation result in audit logs |
 
-**Note:** The `JWT` environment variable is automatically generated when the server starts. It's recommended to use the your own secret.
+**Note:** When `JWT` is not set, a random secret is generated on the first start and stored in the `secret` collection inside the internal database (`VALTHERA_DB_SERVER_DB`). It is reused on subsequent starts. It's recommended to use your own secret.
