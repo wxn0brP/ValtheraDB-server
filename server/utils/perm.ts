@@ -2,7 +2,7 @@ import { AnotherCache } from "@wxn0brp/ac";
 import { Id } from "@wxn0brp/db";
 import { warden } from "../init/initDataBases";
 
-const PERM_CACHE_TTL = parseInt(process.env.PERM_CACHE_TTL) || 900; // 15 minutes
+const PERM_CACHE_TTL = (parseInt(process.env.PERM_CACHE_TTL) || 900) * 1000; // 15 minutes
 export const cache = new AnotherCache<boolean>({
 	ttl: PERM_CACHE_TTL,
 	cleanupInterval: PERM_CACHE_TTL,
@@ -32,14 +32,17 @@ export async function checkPermission(
 	if (op.includes("TOGGLE")) required.push(Permissions.REMOVE, Permissions.ADD);
 	if (!required.length) required.push(Permissions.UNKNOWN);
 
-	for (const r of required) {
+	for (const r of new Set(required)) {
 		const key = `${user}_${r}_${dataCenter}`;
-		if (cache.has(key)) return cache.get(key);
+		let granted = cache.get(key);
 
-		const perm = await warden.hasAccess(user, dataCenter, r);
-		cache.set(key, perm.granted);
+		if (granted === undefined) {
+			const perm = await warden.hasAccess(user, dataCenter, r);
+			granted = perm.granted;
+			cache.set(key, granted);
+		}
 
-		if (!perm.granted) return false;
+		if (!granted) return false;
 	}
 
 	return true;
