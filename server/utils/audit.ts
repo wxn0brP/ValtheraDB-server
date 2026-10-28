@@ -46,9 +46,14 @@ export interface AuditEntry {
 	message?: string;
 }
 
-export async function audit(entry: AuditEntry): Promise<void> {
+export async function audit(entry: AuditEntry) {
 	if (!auditConfig.enabled) return;
 	await auditLogger.info(JSON.stringify(entry));
+}
+
+export async function auditWarn(entry: AuditEntry) {
+	if (!auditConfig.enabled) return;
+	await auditLogger.warn(JSON.stringify(entry));
 }
 
 export async function auditAuth(
@@ -56,7 +61,7 @@ export async function auditAuth(
 	userId?: string,
 	result?: "success" | "error" | "denied",
 	extra?: Partial<AuditEntry>,
-): Promise<void> {
+) {
 	if (!auditConfig.logAuth) return;
 	await audit({
 		userId,
@@ -72,7 +77,7 @@ export async function auditOperation(
 	resource?: string,
 	result?: "success" | "error" | "denied",
 	extra?: Partial<AuditEntry>,
-): Promise<void> {
+) {
 	const isWrite = [
 		"add",
 		"update",

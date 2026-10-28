@@ -1,6 +1,6 @@
 import { UserManager, WardenManager } from "@wxn0brp/gate-warden";
 import crypto from "crypto";
-import { generateHash } from "../server/auth/helpers";
+import { hashPassword } from "../server/auth/helpers";
 import { internalDB } from "../server/init/initDataBases";
 
 export const userMgmt = new UserManager(internalDB);
@@ -108,7 +108,7 @@ export async function addUserAccess(login: string, password: string = "") {
 			msg: "Login already exists.",
 		};
 
-	password = password ? generateHash(password) : "";
+	password = password ? await hashPassword(password) : "";
 
 	const user = await internalDB.user.add({
 		login,
