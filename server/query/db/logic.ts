@@ -1,6 +1,7 @@
 import { isValtheraError } from "@wxn0brp/db-core/errors";
 import type { AdapterCapabilities } from "@wxn0brp/db-core/types/action";
 import { VQuery } from "@wxn0brp/db-core/types/query";
+import { isCollectionOp, isKnownOp } from "@wxn0brp/db-core/utils/opKind";
 import { FFResponse } from "@wxn0brp/falcon-frame";
 import { deserializeFunctions } from "@wxn0brp/wts-run-fn";
 import { dataCenter } from "../../init/initDataBases";
@@ -8,6 +9,7 @@ import { runtime_dir } from "../../init/vars";
 import { isPathSafe } from "../../utils/path";
 import logger from "../../utils/logger";
 import { checkAnyAccess, checkPermission } from "../../utils/perm";
+import { deserializeRegex } from "../../utils/regex";
 import { beginTx, commitTx, getSession, rollbackTx, touch } from "./tx";
 
 export interface Query {
@@ -83,12 +85,6 @@ export enum Codes {
 	COLLECTION_NOT_IN_TRANSACTION = "collection is not part of the transaction",
 }
 
-const collectionOp = new Set([
-	"ensureCollection",
-	"issetCollection",
-	"removeCollection",
-]);
-
 const txControl = new Set([
 	"beginTransaction",
 	"commitTransaction",
@@ -161,6 +157,7 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 	}
 
 	try {
+		if (!isKnownOp(type)) return res.e(Codes.INVALID_TYPE);
 		if (!db[type] || typeof db[type] !== "function")
 			return res.e(Codes.INVALID_TYPE);
 
@@ -181,7 +178,15 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 		if (typeof query !== "object") return res.e(Codes.QUERY_REQ_OBJ);
 		if (!query.collection) return res.e(Codes.COLLECTION_REQ);
 
-		const parsedVQuery = deserializeFunctions(query, keys || []) as VQuery;
+		const withFns = deserializeFunctions(query, keys || []) as VQuery;
+		const parsedVQuery = (
+			withFns.search
+				? {
+						...withFns,
+						search: deserializeRegex(withFns.search),
+					}
+				: withFns
+		) as VQuery;
 
 		if (!isPathSafe(runtime_dir, dbDir, query.collection))
 			return res.e(Codes.INVALID_COLLECTION);
@@ -197,7 +202,7 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 
 			touch(session);
 
-			if (collectionOp.has(type))
+			if (isCollectionOp(type))
 				return res.r(
 					await db.execute(
 						type as any,
@@ -209,7 +214,7 @@ export async function dbLogic(serverQuery: Query): Promise<Response> {
 			return res.r(await db.execute(type as any, parsedVQuery, session.handle));
 		}
 
-		if (collectionOp.has(type))
+		if (isCollectionOp(type))
 			return res.r(await db[type](parsedVQuery.collection));
 
 		return res.r(await db[type](parsedVQuery));

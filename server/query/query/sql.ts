@@ -1,3 +1,4 @@
+import { isKnownOp } from "@wxn0brp/db-core/utils/opKind";
 import { ValtheraDbParsers } from "@wxn0brp/db-string-query";
 import { RouteHandler } from "@wxn0brp/falcon-frame";
 import { runtime_dir } from "../../init/vars";
@@ -30,6 +31,12 @@ export const sqlProxy: RouteHandler = async (req, res) => {
 			});
 
 		const type = query.method;
+
+		if (!isKnownOp(type))
+			return res.status(400).json({
+				err: true,
+				msg: "Invalid query",
+			});
 
 		if (!(await checkPermission(req.user._id, type, req.body.db))) {
 			return res.status(403).json({

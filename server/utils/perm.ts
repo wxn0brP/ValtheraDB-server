@@ -1,5 +1,6 @@
 import { AnotherCache } from "@wxn0brp/ac";
 import { Id } from "@wxn0brp/db";
+import { isKnownOp } from "@wxn0brp/db-core/utils/opKind";
 import { warden } from "../init/initDataBases";
 
 const PERM_CACHE_TTL = (parseInt(process.env.PERM_CACHE_TTL) || 900) * 1000; // 15 minutes
@@ -17,22 +18,47 @@ export enum Permissions {
 	UNKNOWN = 32,
 }
 
+const OP_REQUIRED: Record<string, number> = {
+	find: Permissions.FIND,
+	findOne: Permissions.FIND,
+	count: Permissions.FIND,
+	add: Permissions.ADD,
+	bulkAdd: Permissions.ADD,
+	update: Permissions.UPDATE,
+	updateOne: Permissions.UPDATE,
+	updateOneOrAdd: Permissions.UPDATE | Permissions.ADD,
+	toggleOne: Permissions.REMOVE | Permissions.ADD,
+	remove: Permissions.REMOVE,
+	removeOne: Permissions.REMOVE,
+	ensureCollection: Permissions.COLLECTION,
+	issetCollection: Permissions.COLLECTION,
+	removeCollection: Permissions.COLLECTION,
+	createIndex: Permissions.COLLECTION,
+	removeIndex: Permissions.COLLECTION,
+	getCollections: Permissions.COLLECTION,
+	capabilities: Permissions.COLLECTION,
+};
+
+export function requiredBits(op: string): number[] | null {
+	if (!isKnownOp(op)) return null;
+	const mask = OP_REQUIRED[op];
+	if (mask === undefined) return null;
+	const bits: number[] = [];
+	for (let bit = 1; bit <= mask; bit <<= 1) {
+		if (mask & bit) bits.push(bit);
+	}
+	return bits;
+}
+
 export async function checkPermission(
 	user: Id,
 	operation: string,
 	dataCenter: string,
 ): Promise<boolean> {
-	const required: number[] = [];
-	const op = operation.toUpperCase();
-	if (op.includes("FIND")) required.push(Permissions.FIND);
-	if (op.includes("ADD")) required.push(Permissions.ADD);
-	if (op.includes("REMOVE")) required.push(Permissions.REMOVE);
-	if (op.includes("UPDATE")) required.push(Permissions.UPDATE);
-	if (op.includes("COLLECTION")) required.push(Permissions.COLLECTION);
-	if (op.includes("TOGGLE")) required.push(Permissions.REMOVE, Permissions.ADD);
-	if (!required.length) required.push(Permissions.UNKNOWN);
+	const required = requiredBits(operation);
+	if (!required) return false;
 
-	for (const r of new Set(required)) {
+	for (const r of required) {
 		const key = `${user}_${r}_${dataCenter}`;
 		let granted = cache.get(key);
 

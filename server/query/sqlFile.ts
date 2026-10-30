@@ -1,3 +1,4 @@
+import { isKnownOp } from "@wxn0brp/db-core/utils/opKind";
 import { Router } from "@wxn0brp/falcon-frame";
 import { runtime_dir } from "../init/vars";
 import { isPathSafe } from "../utils/path";
@@ -44,6 +45,13 @@ router.post("/import", async (req, res) => {
 
 		for (const query of queries) {
 			const type = query.method;
+
+			if (!isKnownOp(type)) {
+				return res.status(400).json({
+					err: true,
+					msg: `Invalid query type: ${type}`,
+				});
+			}
 
 			if (!db[type] || typeof db[type] !== "function") {
 				return res.status(400).json({

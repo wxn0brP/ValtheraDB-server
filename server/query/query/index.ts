@@ -1,3 +1,4 @@
+import { isKnownOp } from "@wxn0brp/db-core/utils/opKind";
 import { ValtheraQuery } from "@wxn0brp/db-string-query/types";
 import { Router } from "@wxn0brp/falcon-frame";
 import { runtime_dir } from "../../init/vars";
@@ -56,6 +57,12 @@ router.post("/:parserType", async (req, res) => {
 		}
 
 		const type = query.method;
+
+		if (!isKnownOp(type))
+			return res.status(400).json({
+				err: true,
+				msg: "invalid type",
+			});
 
 		if (!db[type] || typeof db[type] !== "function")
 			return res.status(400).json({

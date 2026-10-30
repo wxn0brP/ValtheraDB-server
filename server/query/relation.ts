@@ -8,6 +8,7 @@ import { runtime_dir } from "../init/vars";
 import { isPathSafe } from "../utils/path";
 import logger from "../utils/logger";
 import { checkPermission } from "../utils/perm";
+import { deserializeRegex } from "../utils/regex";
 
 export const relationRouter = new Router();
 
@@ -59,14 +60,35 @@ function checkCollections(
 	relation: RelationTypes.Relation,
 ): boolean | RelationTypes.Path {
 	for (const cfg of Object.values(relation)) {
-		const [db, collection] = cfg.path;
-		const isRemote = typeof accessCfg[db] !== "string";
+		if (!cfg || typeof cfg !== "object")
+			return [
+				"<invalid>",
+				"entry",
+			];
+		const relPath = cfg.path;
+		if (!Array.isArray(relPath) || relPath.length !== 2)
+			return [
+				"<invalid>",
+				"path",
+			];
+		const [db, collection] = relPath;
+		if (typeof db !== "string" || typeof collection !== "string")
+			return [
+				"<invalid>",
+				"path",
+			];
+		if (!Object.hasOwn(accessCfg, db)) return relPath;
 
-		if (!isRemote && !isPathSafe(baseDir, db, collection)) return cfg.path;
+		const remote = accessCfg[db];
+		const isRemote = typeof remote !== "string";
+		if (!isRemote) {
+			const dir = dataCenter[remote as string]?.dir;
+			if (!dir || !isPathSafe(baseDir, dir, collection)) return relPath;
+		}
 
 		if (cfg.relations) {
 			const res = checkCollections(baseDir, accessCfg, cfg.relations);
-			return res === true ? true : res;
+			if (res !== true) return res;
 		}
 	}
 	return true;
@@ -91,7 +113,7 @@ relationRouter.post("/:type", async (req, res) => {
 		);
 		if (!relation) return;
 
-		if (!relation[type] || typeof relation[type] !== "function")
+		if (type !== "find" && type !== "findOne")
 			return res.status(400).json({
 				err: true,
 				msg: "invalid type",
@@ -105,17 +127,31 @@ relationRouter.post("/:type", async (req, res) => {
 			});
 
 		const collection = params.shift() as string[];
-		if (!collection || collection.length !== 2)
+		if (
+			!Array.isArray(collection) ||
+			collection.length !== 2 ||
+			typeof collection[0] !== "string" ||
+			typeof collection[1] !== "string"
+		)
 			return res.status(400).json({
 				err: true,
 				msg: "collection is required",
 			});
 
-		if (!isPathSafe(runtime_dir, "", collection[1]))
+		const localName = req.body.accessCfg[collection[0]];
+		if (localName === undefined)
 			return res.status(400).json({
 				err: true,
-				msg: "invalid collection",
+				msg: "unknown database in collection path",
 			});
+		if (typeof localName === "string") {
+			const dir = dataCenter[localName]?.dir;
+			if (!dir || !isPathSafe(runtime_dir, dir, collection[1]))
+				return res.status(400).json({
+					err: true,
+					msg: "invalid collection",
+				});
+		}
 
 		const check = checkCollections(
 			runtime_dir,
@@ -130,12 +166,11 @@ relationRouter.post("/:type", async (req, res) => {
 
 		let search = params.shift() as string | Object;
 		if (typeof search === "string") search = changeStringToFunction(search);
+		else if (search && typeof search === "object")
+			search = deserializeRegex(search);
 
-		const result = await relation[type](
-			collection,
-			search,
-			...(params as any[]),
-		);
+		const relationFn = relation[type] as (...args: any[]) => Promise<any>;
+		const result = await relationFn(collection, search, ...(params as any[]));
 
 		res.json({
 			err: false,
